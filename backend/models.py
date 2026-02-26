@@ -52,11 +52,20 @@ class OrderResponse(BaseModel):
     customer_name: str
     phone: str
     address: str
+    landmark: Optional[str] = None
     items: str
+    cart_items: Optional[List[dict]] = []
     notes: Optional[str] = None
     order_type: str
+    delivery_area: Optional[str] = None
+    delivery_charge: float = 0
+    subtotal: float = 0
+    total: float = 0
     status: str
+    payment_method: str = "cod"
+    payment_status: str = "pending"
     estimated_time: str = "30-40 minutes"
+    estimated_delivery_time: str = "45-60 minutes"
     created_at: datetime
     updated_at: datetime
 
