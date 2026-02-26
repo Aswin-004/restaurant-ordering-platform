@@ -31,10 +31,13 @@ def generate_order_number():
 
 @router.post("", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_order(order: OrderCreate):
-    """Create a new order"""
+    """Create a new order with server-side validation and calculation"""
     try:
         db = get_db()
         orders_collection = db.orders
+        
+        # Validate and recalculate order data
+        validated_data = validate_order_data(order)
         
         order_dict = order.dict()
         order_dict["id"] = str(uuid.uuid4())
@@ -42,7 +45,16 @@ async def create_order(order: OrderCreate):
         order_dict["status"] = OrderStatus.PENDING.value
         order_dict["created_at"] = datetime.utcnow()
         order_dict["updated_at"] = datetime.utcnow()
-        order_dict["estimated_time"] = "30-40 minutes"
+        
+        # Override with server-calculated values
+        order_dict["subtotal"] = validated_data["subtotal"]
+        order_dict["delivery_charge"] = validated_data["delivery_charge"]
+        order_dict["total"] = validated_data["total"]
+        order_dict["payment_status"] = "pending"
+        
+        # Ensure cart_items are properly formatted
+        if order_dict.get("cart_items"):
+            order_dict["cart_items"] = [item.dict() for item in order.cart_items]
 
         result = await orders_collection.insert_one(order_dict)
         
