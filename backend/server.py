@@ -10,6 +10,9 @@ from typing import List
 import uuid
 from datetime import datetime, timezone
 
+# Import route modules
+from routes import orders, menu
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -65,6 +68,10 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+# Include order and menu routes
+api_router.include_router(orders.router)
+api_router.include_router(menu.router)
 
 # Include the router in the main app
 app.include_router(api_router)
