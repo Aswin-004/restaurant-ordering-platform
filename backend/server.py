@@ -69,6 +69,10 @@ async def get_status_checks():
     
     return status_checks
 
+# Set database for route modules
+orders.set_database(db)
+menu.set_database(db)
+
 # Include order and menu routes
 api_router.include_router(orders.router)
 api_router.include_router(menu.router)
