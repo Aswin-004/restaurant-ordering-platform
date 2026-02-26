@@ -25,6 +25,7 @@ import FloatingCartButton from './components/FloatingCartButton';
 // Pages
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import AdminPanel from './pages/AdminPanel';
 
 // Hooks
 import { useLocation as useLocationContext } from './contexts/LocationContext';
@@ -111,6 +112,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
+              <Route path="/admin" element={<AdminPanel />} />
             </Routes>
           </div>
           <Toaster 
