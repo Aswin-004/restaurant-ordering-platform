@@ -304,17 +304,18 @@ const Checkout = () => {
                       </div>
                     </label>
 
-                    <label className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-not-allowed opacity-50">
+                    <label className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-[#8B0000] hover:bg-[#FFF8DC] transition-all">
                       <input
                         type="radio"
                         name="payment"
                         value="razorpay"
-                        disabled
+                        checked={paymentMethod === 'razorpay'}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
                         className="w-5 h-5 text-[#8B0000]"
                       />
                       <div className="ml-3">
                         <div className="font-semibold text-gray-800">Online Payment</div>
-                        <div className="text-sm text-gray-600">UPI / Card / Net Banking (Coming Soon)</div>
+                        <div className="text-sm text-gray-600">UPI / Card / Net Banking</div>
                       </div>
                     </label>
                   </div>
@@ -405,13 +406,17 @@ const Checkout = () => {
                 {/* Place Order Button */}
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || paymentMethod === 'razorpay'}
                   className="w-full bg-[#8B0000] text-white hover:bg-[#6B0000] py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Placing Order...</span>
+                      <span>Processing...</span>
+                    </>
+                  ) : paymentMethod === 'razorpay' ? (
+                    <>
+                      <span>Pay ₹{total}</span>
                     </>
                   ) : (
                     <>

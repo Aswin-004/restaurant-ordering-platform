@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timezone
 
 # Import route modules
-from routes import orders, menu
+from routes import orders, menu, payment
 
 
 ROOT_DIR = Path(__file__).parent
@@ -72,10 +72,12 @@ async def get_status_checks():
 # Set database for route modules
 orders.set_database(db)
 menu.set_database(db)
+payment.set_database(db)
 
 # Include order and menu routes
 api_router.include_router(orders.router)
 api_router.include_router(menu.router)
+api_router.include_router(payment.router)
 
 # Include the router in the main app
 app.include_router(api_router)
