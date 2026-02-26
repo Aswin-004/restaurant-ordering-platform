@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from enum import Enum
 
@@ -18,22 +18,32 @@ class OrderType(str, Enum):
     DINE_IN = "dine_in"
     TAKEAWAY = "takeaway"
     DELIVERY = "delivery"
+    PICKUP = "pickup"
 
 
-class OrderItemCreate(BaseModel):
-    name: str
-    quantity: int = 1
-    price: Optional[float] = None
-    notes: Optional[str] = None
+class CartItem(BaseModel):
+    item_name: str
+    quantity: int
+    price: float
+    subtotal: float
 
 
 class OrderCreate(BaseModel):
     customer_name: str = Field(..., min_length=2, max_length=100)
     phone: str = Field(..., min_length=10, max_length=15)
     address: str = Field(..., min_length=5, max_length=500)
+    landmark: Optional[str] = None
     items: str = Field(..., min_length=3)
+    cart_items: Optional[List[CartItem]] = []
     notes: Optional[str] = None
-    order_type: OrderType = OrderType.DELIVERY
+    order_type: str = "delivery"
+    delivery_area: Optional[str] = None
+    delivery_charge: float = 0
+    subtotal: float = 0
+    total: float = 0
+    payment_method: str = "cod"
+    payment_status: str = "pending"
+    estimated_delivery_time: str = "45-60 minutes"
 
 
 class OrderResponse(BaseModel):
