@@ -66,10 +66,10 @@ const Header = () => {
           </nav>
 
           {/* Contact Info */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm">
               <Clock className="w-4 h-4 text-[#D4AF37]" />
-              <span className="text-gray-600">Open Now</span>
+              <span className="text-gray-600">{restaurantInfo.timingsDetail}</span>
             </div>
             <a
               href={`tel:${restaurantInfo.phone}`}

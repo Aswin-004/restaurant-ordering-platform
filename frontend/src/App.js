@@ -81,9 +81,6 @@ const HomePage = () => {
         <Menu onOpenCart={() => setIsCartDrawerOpen(true)} />
         <Gallery />
         <Location />
-        <div id="order">
-          <OrderSection />
-        </div>
       </main>
       <Footer />
       <FloatingButtons />

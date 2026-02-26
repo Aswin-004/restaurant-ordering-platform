@@ -7,15 +7,16 @@ export const restaurantInfo = {
   landmark: "Near SRM University",
   phone: "+918056070976",
   whatsapp: "+918056070976",
-  email: "info@classicrestaurant.com",
-  timings: "11:00 AM – 11:00 PM (All days)",
+  email: "classicrestaurant.potheri@gmail.com",
+  timings: "11:00 AM – 11:00 PM",
+  timingsDetail: "Open All Days",
   avgCost: "₹500 for two",
   rating: 4.0,
   reviewCount: 62,
   cuisines: ["North Indian", "Chinese", "Seafood", "Biryani", "Pasta", "Fast Food", "Beverages"],
   services: ["Dine-in", "Takeaway", "Home Delivery"],
   payments: "Accepts Digital Payments",
-  googleMapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.3448!2d80.0423!3d12.8230!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDQ5JzIyLjgiTiA4MMKwMDInMzIuMyJF!5e0!3m2!1sen!2sin!4v1234567890"
+  googleMapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.344!2d80.0423!3d12.8230!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525817f892c9c9%3A0x5c6a6f7e6d1a6b6c!2sSRM%20Institute%20of%20Science%20and%20Technology!5e0!3m2!1sen!2sin!4v1234567890123"
 };
 
 export const bestSellers = [
@@ -29,21 +30,12 @@ export const bestSellers = [
     category: "Biryani"
   },
   {
-    id: 2,
-    name: "Butter Chicken",
-    description: "Creamy tomato-based curry with tender chicken pieces",
-    price: "₹240",
-    image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398",
-    badge: "Chef's Special",
-    category: "North Indian"
-  },
-  {
     id: 3,
     name: "Hakka Noodles",
     description: "Stir-fried noodles with vegetables and choice of protein",
     price: "₹150",
     image: "https://images.unsplash.com/photo-1585032226651-759b368d7246",
-    badge: "Student Favorite",
+    badge: "Chef's Special",
     category: "Chinese"
   },
   {
