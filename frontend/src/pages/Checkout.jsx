@@ -48,7 +48,15 @@ const Checkout = () => {
       toast.error('Your cart is empty');
       navigate('/');
     }
-  }, [items, navigate]);
+  }, [items.length, navigate]);
+
+  // Redirect if location not set
+  React.useEffect(() => {
+    if (!deliveryType) {
+      toast.error('Please select delivery or pickup option');
+      navigate('/');
+    }
+  }, [deliveryType, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -115,7 +123,14 @@ const Checkout = () => {
 
     } catch (error) {
       console.error('Order submission error:', error);
-      toast.error(error.response?.data?.detail || 'Failed to place order. Please try again.');
+      
+      // Handle validation errors from backend
+      if (error.response?.data?.detail?.errors) {
+        const backendErrors = error.response.data.detail.errors;
+        toast.error(backendErrors.join(', '));
+      } else {
+        toast.error(error.response?.data?.detail || 'Failed to place order. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
