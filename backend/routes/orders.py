@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List
 from models import (
     OrderCreate,
@@ -6,18 +6,20 @@ from models import (
     OrderStatusUpdate,
     OrderStatus
 )
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
 from datetime import datetime
 import uuid
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-orders_collection = db.orders
+# Database dependency will be injected
+_db = None
+
+def set_database(database):
+    global _db
+    _db = database
+
+def get_db():
+    return _db
 
 
 def generate_order_number():
@@ -31,6 +33,9 @@ def generate_order_number():
 async def create_order(order: OrderCreate):
     """Create a new order"""
     try:
+        db = get_db()
+        orders_collection = db.orders
+        
         order_dict = order.dict()
         order_dict["id"] = str(uuid.uuid4())
         order_dict["order_number"] = generate_order_number()
@@ -65,6 +70,9 @@ async def get_all_orders(
 ):
     """Get all orders with optional status filter"""
     try:
+        db = get_db()
+        orders_collection = db.orders
+        
         query = {}
         if status_filter:
             query["status"] = status_filter
@@ -86,6 +94,9 @@ async def get_all_orders(
 async def get_order(order_id: str):
     """Get a specific order by ID"""
     try:
+        db = get_db()
+        orders_collection = db.orders
+        
         order = await orders_collection.find_one({"id": order_id})
         
         if not order:
@@ -109,6 +120,9 @@ async def get_order(order_id: str):
 async def update_order_status(order_id: str, status_update: OrderStatusUpdate):
     """Update order status"""
     try:
+        db = get_db()
+        orders_collection = db.orders
+        
         order = await orders_collection.find_one({"id": order_id})
         
         if not order:
@@ -149,6 +163,9 @@ async def update_order_status(order_id: str, status_update: OrderStatusUpdate):
 async def delete_order(order_id: str):
     """Delete an order (admin only)"""
     try:
+        db = get_db()
+        orders_collection = db.orders
+        
         result = await orders_collection.delete_one({"id": order_id})
         
         if result.deleted_count == 0:
@@ -171,6 +188,9 @@ async def delete_order(order_id: str):
 async def get_order_by_number(order_number: str):
     """Get order by order number for customer tracking"""
     try:
+        db = get_db()
+        orders_collection = db.orders
+        
         order = await orders_collection.find_one({"order_number": order_number})
         
         if not order:
