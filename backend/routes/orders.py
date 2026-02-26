@@ -4,7 +4,8 @@ from models import (
     OrderCreate,
     OrderResponse,
     OrderStatusUpdate,
-    OrderStatus
+    OrderStatus,
+    CartItem
 )
 from datetime import datetime
 import uuid
@@ -24,9 +25,92 @@ def get_db():
 
 def generate_order_number():
     """Generate a unique order number"""
-    timestamp = datetime.now().strftime("%Y%m%d")
+    timestamp = datetime.utcnow().strftime("%Y%m%d")
     random_suffix = str(uuid.uuid4())[:6].upper()
     return f"ORD-{timestamp}-{random_suffix}"
+
+
+def calculate_delivery_charge(area: str, order_type: str) -> float:
+    """Server-side delivery charge calculation"""
+    if order_type == 'pickup':
+        return 0.0
+    
+    area_lower = area.lower() if area else ''
+    
+    if 'srm' in area_lower or 'potheri' in area_lower:
+        return 20.0
+    elif 'guduvanchery' in area_lower:
+        return 40.0
+    else:
+        # Area not serviceable
+        return -1.0
+
+
+def validate_order_data(order: OrderCreate) -> dict:
+    """
+    Server-side order validation and calculation
+    Returns: dict with validated data or raises HTTPException
+    """
+    errors = []
+    
+    # Validate cart items exist
+    if not order.cart_items or len(order.cart_items) == 0:
+        errors.append("Cart is empty")
+    
+    # Recalculate subtotal from cart items
+    calculated_subtotal = 0.0
+    for item in order.cart_items:
+        if item.quantity <= 0:
+            errors.append(f"Invalid quantity for {item.item_name}")
+        if item.price < 0:
+            errors.append(f"Invalid price for {item.item_name}")
+        
+        # Recalculate item subtotal
+        item.subtotal = item.price * item.quantity
+        calculated_subtotal += item.subtotal
+    
+    # Validate customer details
+    if not order.customer_name or len(order.customer_name.strip()) < 2:
+        errors.append("Invalid customer name")
+    
+    if not order.phone or len(order.phone.replace(" ", "").replace("-", "")) < 10:
+        errors.append("Invalid phone number")
+    
+    # Validate delivery details
+    if order.order_type == 'delivery':
+        if not order.address or len(order.address.strip()) < 10:
+            errors.append("Invalid delivery address")
+        if not order.delivery_area:
+            errors.append("Delivery area is required")
+    
+    # Recalculate delivery charge
+    calculated_delivery_charge = calculate_delivery_charge(
+        order.delivery_area or '',
+        order.order_type
+    )
+    
+    if calculated_delivery_charge < 0:
+        errors.append("Delivery not available in your area")
+    
+    # Calculate total
+    calculated_total = calculated_subtotal + calculated_delivery_charge
+    
+    # Validate minimum order
+    min_order = 199.0 if order.order_type == 'delivery' else 0.0
+    if calculated_subtotal < min_order:
+        errors.append(f"Minimum order amount is ₹{min_order}")
+    
+    if errors:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"message": "Order validation failed", "errors": errors}
+        )
+    
+    return {
+        "subtotal": round(calculated_subtotal, 2),
+        "delivery_charge": round(calculated_delivery_charge, 2),
+        "total": round(calculated_total, 2)
+    }
 
 
 @router.post("", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
