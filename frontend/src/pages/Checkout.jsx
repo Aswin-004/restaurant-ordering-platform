@@ -73,7 +73,6 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form
     const validation = validateCheckoutForm({ ...formData, deliveryType });
     if (!validation.isValid) {
       setErrors(validation.errors);
@@ -89,50 +88,113 @@ const Checkout = () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare order data
-      const orderData = {
+      if (paymentMethod === 'cod') {
+        // COD: Submit order directly
+        const orderData = {
+          customer_name: formData.name,
+          phone: formData.phone,
+          address: deliveryType === 'delivery' ? formData.address : 'Pickup from restaurant',
+          landmark: formData.landmark || '',
+          items: items.map(item => `${item.quantity}x ${item.name}`).join(', '),
+          cart_items: items.map(item => ({
+            item_name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            subtotal: item.price * item.quantity
+          })),
+          notes: formData.notes || '',
+          order_type: deliveryType,
+          delivery_area: selectedArea
+        };
+
+        const response = await axios.post(`${API}/orders`, orderData);
+        clearCart();
+        toast.success('Order placed successfully!');
+        navigate(`/order-success/${response.data.order_number}`);
+        
+      } else {
+        // Razorpay: Create order and initiate payment
+        await handleRazorpayPayment();
+      }
+
+    } catch (error) {
+      if (error.response?.data?.detail?.errors) {
+        toast.error(error.response.data.detail.errors.join(', '));
+      } else {
+        toast.error(error.response?.data?.detail || 'Failed to place order');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRazorpayPayment = async () => {
+    try {
+      const orderPayload = {
         customer_name: formData.name,
         phone: formData.phone,
         address: deliveryType === 'delivery' ? formData.address : 'Pickup from restaurant',
         landmark: formData.landmark || '',
-        items: items.map(item => `${item.quantity}x ${item.name}`).join(', '),
         cart_items: items.map(item => ({
           item_name: item.name,
           quantity: item.quantity,
-          price: item.price,
-          subtotal: item.price * item.quantity
+          price: item.price
         })),
         notes: formData.notes || '',
         order_type: deliveryType,
-        delivery_area: selectedArea,
-        delivery_charge: deliveryCharge,
-        subtotal: subtotal,
-        total: total,
-        payment_method: paymentMethod,
-        payment_status: 'pending',
-        estimated_delivery_time: estimatedTime
+        delivery_area: selectedArea
       };
 
-      // Submit order
-      const response = await axios.post(`${API}/orders`, orderData);
+      const response = await axios.post(`${API}/payment/create-razorpay-order`, orderPayload);
 
-      // Clear cart and navigate to success page
-      clearCart();
-      toast.success('Order placed successfully!');
-      navigate(`/order-success/${response.data.order_number}`);
+      const options = {
+        key: response.data.key_id,
+        amount: response.data.amount * 100,
+        currency: response.data.currency,
+        name: 'Classic Restaurant',
+        description: 'Order Payment',
+        order_id: response.data.razorpay_order_id,
+        handler: async function (razorpayResponse) {
+          try {
+            await axios.post(`${API}/payment/verify-payment`, {
+              razorpay_order_id: razorpayResponse.razorpay_order_id,
+              razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+              razorpay_signature: razorpayResponse.razorpay_signature,
+              order_number: response.data.order_number
+            });
+
+            clearCart();
+            toast.success('Payment successful!');
+            navigate(`/order-success/${response.data.order_number}`);
+          } catch (error) {
+            toast.error('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: formData.name,
+          contact: formData.phone
+        },
+        theme: {
+          color: '#8B0000'
+        },
+        modal: {
+          ondismiss: function() {
+            setIsSubmitting(false);
+            toast.error('Payment cancelled');
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.on('payment.failed', function () {
+        setIsSubmitting(false);
+        toast.error('Payment failed. Please try again.');
+      });
+      razorpay.open();
 
     } catch (error) {
-      console.error('Order submission error:', error);
-      
-      // Handle validation errors from backend
-      if (error.response?.data?.detail?.errors) {
-        const backendErrors = error.response.data.detail.errors;
-        toast.error(backendErrors.join(', '));
-      } else {
-        toast.error(error.response?.data?.detail || 'Failed to place order. Please try again.');
-      }
-    } finally {
       setIsSubmitting(false);
+      toast.error(error.response?.data?.detail || 'Failed to initiate payment');
     }
   };
 
