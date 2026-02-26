@@ -1,13 +1,36 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Plus, ShoppingCart } from 'lucide-react';
 import { menuCategories } from '../utils/mockData';
+import { useCart } from '../contexts/CartContext';
+import { useLocation } from '../contexts/LocationContext';
+import toast from 'react-hot-toast';
 
-const Menu = () => {
+const Menu = ({ onOpenCart }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategory, setExpandedCategory] = useState(null);
+  const { addItem } = useCart();
+  const { isLocationSet } = useLocation();
 
   const toggleCategory = (categoryId) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
+  };
+
+  const handleAddToCart = (item, categoryName) => {
+    if (!isLocationSet) {
+      toast.error('Please select delivery/pickup option first');
+      return;
+    }
+    
+    addItem({
+      name: item.name,
+      price: item.price,
+      category: categoryName
+    });
+    
+    toast.success(`${item.name} added to cart!`, {
+      icon: '🛒',
+      duration: 2000
+    });
   };
 
   const filteredCategories = menuCategories.map((category) => ({
@@ -83,13 +106,22 @@ const Menu = () => {
                   {category.items.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0 hover:bg-white/50 px-4 rounded-lg transition-colors"
+                      className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0 hover:bg-white/50 px-4 rounded-lg transition-colors group"
                     >
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-800">{item.name}</h4>
                       </div>
-                      <div className="text-lg font-bold text-[#8B0000]">
-                        ₹{item.price}
+                      <div className="flex items-center space-x-4">
+                        <div className="text-lg font-bold text-[#8B0000]">
+                          ₹{item.price}
+                        </div>
+                        <button
+                          onClick={() => handleAddToCart(item, category.name)}
+                          className="bg-[#8B0000] text-white px-4 py-2 rounded-lg hover:bg-[#6B0000] transition-colors flex items-center space-x-2 opacity-0 group-hover:opacity-100"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span className="text-sm font-semibold">Add</span>
+                        </button>
                       </div>
                     </div>
                   ))}
