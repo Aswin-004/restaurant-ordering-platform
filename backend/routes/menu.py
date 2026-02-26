@@ -1,24 +1,29 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
 from models import MenuItemCreate, MenuItemResponse, MenuItemUpdate
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
 from datetime import datetime
 import uuid
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-menu_collection = db.menu
+# Database dependency will be injected
+_db = None
+
+def set_database(database):
+    global _db
+    _db = database
+
+def get_db():
+    return _db
 
 
 @router.get("", response_model=List[MenuItemResponse])
 async def get_menu(category: str = None, available_only: bool = True):
     """Get menu items with optional category filter"""
     try:
+        db = get_db()
+        menu_collection = db.menu
+        
         query = {}
         if category:
             query["category"] = category
@@ -42,6 +47,9 @@ async def get_menu(category: str = None, available_only: bool = True):
 async def get_categories():
     """Get all menu categories"""
     try:
+        db = get_db()
+        menu_collection = db.menu
+        
         categories = await menu_collection.distinct("category")
         return {"categories": categories}
     except Exception as e:
@@ -55,6 +63,9 @@ async def get_categories():
 async def create_menu_item(item: MenuItemCreate):
     """Create a new menu item (admin only)"""
     try:
+        db = get_db()
+        menu_collection = db.menu
+        
         item_dict = item.dict()
         item_dict["id"] = str(uuid.uuid4())
         item_dict["created_at"] = datetime.utcnow()
@@ -82,6 +93,9 @@ async def create_menu_item(item: MenuItemCreate):
 async def get_menu_item(item_id: str):
     """Get a specific menu item"""
     try:
+        db = get_db()
+        menu_collection = db.menu
+        
         item = await menu_collection.find_one({"id": item_id})
         
         if not item:
@@ -105,6 +119,9 @@ async def get_menu_item(item_id: str):
 async def update_menu_item(item_id: str, item_update: MenuItemUpdate):
     """Update a menu item (admin only)"""
     try:
+        db = get_db()
+        menu_collection = db.menu
+        
         item = await menu_collection.find_one({"id": item_id})
         
         if not item:
@@ -143,6 +160,9 @@ async def update_menu_item(item_id: str, item_update: MenuItemUpdate):
 async def delete_menu_item(item_id: str):
     """Delete a menu item (admin only)"""
     try:
+        db = get_db()
+        menu_collection = db.menu
+        
         result = await menu_collection.delete_one({"id": item_id})
         
         if result.deleted_count == 0:
