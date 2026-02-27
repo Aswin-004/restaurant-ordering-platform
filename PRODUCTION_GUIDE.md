@@ -84,7 +84,7 @@ sudo supervisorctl restart backend
 ## 👨‍💼 ADMIN DASHBOARD
 
 ### Access
-- URL: https://classic-potheri.preview.emergentagent.com/admin
+- URL: https://food-delivery-sys-6.preview.emergentagent.com/admin
 - Username: `admin`
 - Password: Set in `.env` as `ADMIN_PASSWORD`
 
@@ -276,8 +276,8 @@ yarn start
 **Mobile:** ✅ Responsive
 
 **Live URLs:**
-- Customer Site: https://classic-potheri.preview.emergentagent.com
-- Admin Panel: https://classic-potheri.preview.emergentagent.com/admin
+- Customer Site: https://food-delivery-sys-6.preview.emergentagent.com
+- Admin Panel: https://food-delivery-sys-6.preview.emergentagent.com/admin
 
 ---
 
