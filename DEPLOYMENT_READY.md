@@ -52,7 +52,7 @@ RAZORPAY_KEY_SECRET=xxxxx
 3. Restart backend: `sudo supervisorctl restart backend`
 
 ### Admin Access
-- URL: https://classic-potheri.preview.emergentagent.com/admin
+- URL: https://food-delivery-sys-6.preview.emergentagent.com/admin
 - Username: `admin`
 - Password: `classic@admin2026`
 
@@ -96,8 +96,8 @@ RAZORPAY_KEY_SECRET=xxxxx
 
 ## 📱 LIVE URLS
 
-**Customer Site:** https://classic-potheri.preview.emergentagent.com
-**Admin Panel:** https://classic-potheri.preview.emergentagent.com/admin
+**Customer Site:** https://food-delivery-sys-6.preview.emergentagent.com
+**Admin Panel:** https://food-delivery-sys-6.preview.emergentagent.com/admin
 
 ## 🚀 READY FOR PRODUCTION
 

@@ -43,7 +43,7 @@ export const bestSellers = [
     name: "Seafood Special",
     description: "Fresh catch of the day with exotic spices",
     price: "₹280",
-    image: "https://images.unsplash.com/photo-1519351635902-7d60d09cb2ed",
+    image: "https://images.unsplash.com/photo-1765265432607-cdc1060294ba?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwxfHxzZWFmb29kJTIwcGxhdHRlciUyMGZpc2glMjBwcmF3bnMlMjBzcGljeSUyMGluZGlhbnxlbnwwfHx8fDE3NzIxOTE3NTB8MA&ixlib=rb-4.1.0&q=85",
     badge: "Premium",
     category: "Seafood"
   }
@@ -147,12 +147,12 @@ export const whyChooseUs = [
   {
     icon: "DollarSign",
     title: "Affordable Pricing",
-    description: "Just ₹500 for two people with generous portions"
+    description: "Great value with generous portions"
   },
   {
     icon: "MapPin",
     title: "Near SRM University",
-    description: "Just minutes away from campus - perfect for students"
+    description: "Conveniently located in Potheri"
   },
   {
     icon: "Leaf",
@@ -197,7 +197,7 @@ export const reviews = [
     id: 3,
     name: "Arjun Patel",
     rating: 5,
-    comment: "As a SRM student, this is my go-to place. Good portions, tasty food, and pocket-friendly prices!",
+    comment: "This is my go-to place for delicious food. Good portions, tasty dishes, and pocket-friendly prices!",
     date: "2 weeks ago",
     avatar: "AP"
   },

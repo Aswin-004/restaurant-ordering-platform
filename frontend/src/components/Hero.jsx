@@ -70,20 +70,20 @@ const Hero = ({ onOrderClick, onMenuClick }) => {
 
           {/* Urgency Banner */}
           <div className="mt-8 inline-block">
-            <div className="bg-[#D4AF37] text-[#8B0000] px-6 py-3 rounded-lg font-bold text-lg animate-pulse">
-              🔥 Hungry? We're Open Now!
+            <div className="bg-[#D4AF37] text-[#8B0000] px-6 py-3 rounded-lg font-bold text-lg">
+              🔥 Open Now • Fast Delivery!
             </div>
           </div>
         </div>
       </div>
 
-      {/* Student Offer Badge - Floating */}
+      {/* Price Badge - Floating */}
       <div className="absolute bottom-8 right-8 hidden lg:block">
         <div className="bg-white p-6 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
           <div className="text-center">
             <div className="text-3xl font-bold text-[#8B0000] mb-1">₹500</div>
             <div className="text-sm text-gray-600 font-medium">For Two People</div>
-            <div className="mt-2 text-xs text-[#D4AF37] font-semibold">Student Combos Available</div>
+            <div className="mt-2 text-xs text-[#D4AF37] font-semibold">Best Value Meals</div>
           </div>
         </div>
       </div>

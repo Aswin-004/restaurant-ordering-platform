@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, LogOut, Package, Clock, CheckCircle, X as XIcon } from 'lucide-react';
+import { Lock, Eye, EyeOff, LogOut, Package, Clock, CheckCircle, X as XIcon, Sparkles, Plus, Trash2, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -23,6 +23,23 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState('orders');
+  
+  // Specials state
+  const [specials, setSpecials] = useState([]);
+  const [specialsLoading, setSpecialsLoading] = useState(false);
+  const [showSpecialForm, setShowSpecialForm] = useState(false);
+  const [editingSpecial, setEditingSpecial] = useState(null);
+  const [specialForm, setSpecialForm] = useState({
+    name: '',
+    description: '',
+    original_price: '',
+    special_price: '',
+    image: '',
+    badge: "Today's Special"
+  });
 
   useEffect(() => {
     // Check if already authenticated
@@ -30,6 +47,7 @@ const AdminPanel = () => {
     if (auth === 'true') {
       setIsAuthenticated(true);
       fetchOrders();
+      fetchSpecials();
     }
   }, []);
 
@@ -43,6 +61,7 @@ const AdminPanel = () => {
       setIsAuthenticated(true);
       toast.success('Login successful!');
       fetchOrders();
+      fetchSpecials();
     } else {
       toast.error('Invalid credentials');
     }
@@ -97,6 +116,90 @@ const AdminPanel = () => {
       cancelled: 'bg-red-100 text-red-800'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  // Specials Management Functions
+  const fetchSpecials = async () => {
+    setSpecialsLoading(true);
+    try {
+      const response = await axios.get(`${API}/specials?active_only=false`);
+      setSpecials(response.data);
+    } catch (error) {
+      console.log('Failed to fetch specials');
+    } finally {
+      setSpecialsLoading(false);
+    }
+  };
+
+  const handleSpecialSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...specialForm,
+        original_price: parseFloat(specialForm.original_price),
+        special_price: parseFloat(specialForm.special_price)
+      };
+
+      if (editingSpecial) {
+        await axios.put(`${API}/specials/${editingSpecial.id}`, payload);
+        toast.success('Special updated!');
+      } else {
+        await axios.post(`${API}/specials`, payload);
+        toast.success('Special created!');
+      }
+      
+      fetchSpecials();
+      resetSpecialForm();
+    } catch (error) {
+      toast.error('Failed to save special');
+    }
+  };
+
+  const deleteSpecial = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this special?')) return;
+    try {
+      await axios.delete(`${API}/specials/${id}`);
+      toast.success('Special deleted!');
+      fetchSpecials();
+    } catch (error) {
+      toast.error('Failed to delete special');
+    }
+  };
+
+  const toggleSpecial = async (id) => {
+    try {
+      await axios.patch(`${API}/specials/${id}/toggle`);
+      toast.success('Special toggled!');
+      fetchSpecials();
+    } catch (error) {
+      toast.error('Failed to toggle special');
+    }
+  };
+
+  const editSpecial = (special) => {
+    setEditingSpecial(special);
+    setSpecialForm({
+      name: special.name,
+      description: special.description,
+      original_price: special.original_price.toString(),
+      special_price: special.special_price.toString(),
+      image: special.image || '',
+      badge: special.badge
+    });
+    setShowSpecialForm(true);
+  };
+
+  const resetSpecialForm = () => {
+    setSpecialForm({
+      name: '',
+      description: '',
+      original_price: '',
+      special_price: '',
+      image: '',
+      badge: "Today's Special"
+    });
+    setEditingSpecial(null);
+    setShowSpecialForm(false);
   };
 
   if (!isAuthenticated) {
@@ -186,15 +289,44 @@ const AdminPanel = () => {
             <span>Logout</span>
           </Button>
         </div>
+        {/* Tabs */}
+        <div className="container mx-auto px-4 pb-2">
+          <div className="flex gap-4 border-b">
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`pb-2 px-4 font-semibold flex items-center gap-2 transition-colors ${
+                activeTab === 'orders'
+                  ? 'border-b-2 border-[#8B0000] text-[#8B0000]'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Package className="w-5 h-5" />
+              Orders
+            </button>
+            <button
+              onClick={() => setActiveTab('specials')}
+              className={`pb-2 px-4 font-semibold flex items-center gap-2 transition-colors ${
+                activeTab === 'specials'
+                  ? 'border-b-2 border-[#8B0000] text-[#8B0000]'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Sparkles className="w-5 h-5" />
+              Today's Specials
+            </button>
+          </div>
+        </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="text-3xl font-bold text-[#8B0000] mb-2">{orders.length}</div>
-            <div className="text-gray-600">Total Orders</div>
-          </div>
+        {activeTab === 'orders' ? (
+          <>
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl font-bold text-[#8B0000] mb-2">{orders.length}</div>
+                <div className="text-gray-600">Total Orders</div>
+              </div>
           <div className="bg-white rounded-xl p-6 shadow-md">
             <div className="text-3xl font-bold text-yellow-600 mb-2">
               {orders.filter(o => o.status === 'pending').length}

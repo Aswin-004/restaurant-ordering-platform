@@ -20,7 +20,7 @@ ADMIN_PASSWORD=your_secure_password_here
 
 **Frontend (.env file location: `/app/frontend/.env`)**
 ```env
-REACT_APP_BACKEND_URL=https://classic-potheri.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://food-delivery-sys-6.preview.emergentagent.com
 ```
 
 ---
@@ -129,7 +129,7 @@ OTP: Any 6 digits
 ## 👨‍💼 Admin Dashboard
 
 ### Access
-- **URL**: https://classic-potheri.preview.emergentagent.com/admin
+- **URL**: https://food-delivery-sys-6.preview.emergentagent.com/admin
 - **Username**: `admin`
 - **Password**: Set in `.env` as `ADMIN_PASSWORD`
 
@@ -207,7 +207,7 @@ cat /app/backend/.env | grep RAZORPAY
 tail -f /var/log/supervisor/backend.err.log
 
 # Verify Razorpay script loaded
-curl https://classic-potheri.preview.emergentagent.com | grep razorpay
+curl https://food-delivery-sys-6.preview.emergentagent.com | grep razorpay
 ```
 
 ### Admin Login Failed
@@ -327,9 +327,9 @@ free -h
 
 ## 📱 URLs
 
-**Customer Website**: https://classic-potheri.preview.emergentagent.com  
-**Admin Panel**: https://classic-potheri.preview.emergentagent.com/admin  
-**API Documentation**: https://classic-potheri.preview.emergentagent.com/docs (FastAPI)
+**Customer Website**: https://food-delivery-sys-6.preview.emergentagent.com  
+**Admin Panel**: https://food-delivery-sys-6.preview.emergentagent.com/admin  
+**API Documentation**: https://food-delivery-sys-6.preview.emergentagent.com/docs (FastAPI)
 
 ---
 

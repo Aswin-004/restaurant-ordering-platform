@@ -12,7 +12,7 @@ const Reviews = () => {
             <span className="text-[#8B0000] font-semibold">Testimonials</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-[#8B0000] mb-4">
-            Loved by SRM Students & Families in Potheri
+            Loved by Families in Potheri
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Don't just take our word for it - hear from our satisfied customers

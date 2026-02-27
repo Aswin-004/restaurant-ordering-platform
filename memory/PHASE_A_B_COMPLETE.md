@@ -170,7 +170,7 @@
 
 ## 🚀 What's Ready for Testing
 
-1. **Visit https://classic-potheri.preview.emergentagent.com**
+1. **Visit https://food-delivery-sys-6.preview.emergentagent.com**
 2. **Select delivery or pickup** from location modal
 3. **Browse menu** and add items to cart
 4. **Open cart** via floating button
