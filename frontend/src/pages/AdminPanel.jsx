@@ -118,6 +118,90 @@ const AdminPanel = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
+  // Specials Management Functions
+  const fetchSpecials = async () => {
+    setSpecialsLoading(true);
+    try {
+      const response = await axios.get(`${API}/specials?active_only=false`);
+      setSpecials(response.data);
+    } catch (error) {
+      console.log('Failed to fetch specials');
+    } finally {
+      setSpecialsLoading(false);
+    }
+  };
+
+  const handleSpecialSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...specialForm,
+        original_price: parseFloat(specialForm.original_price),
+        special_price: parseFloat(specialForm.special_price)
+      };
+
+      if (editingSpecial) {
+        await axios.put(`${API}/specials/${editingSpecial.id}`, payload);
+        toast.success('Special updated!');
+      } else {
+        await axios.post(`${API}/specials`, payload);
+        toast.success('Special created!');
+      }
+      
+      fetchSpecials();
+      resetSpecialForm();
+    } catch (error) {
+      toast.error('Failed to save special');
+    }
+  };
+
+  const deleteSpecial = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this special?')) return;
+    try {
+      await axios.delete(`${API}/specials/${id}`);
+      toast.success('Special deleted!');
+      fetchSpecials();
+    } catch (error) {
+      toast.error('Failed to delete special');
+    }
+  };
+
+  const toggleSpecial = async (id) => {
+    try {
+      await axios.patch(`${API}/specials/${id}/toggle`);
+      toast.success('Special toggled!');
+      fetchSpecials();
+    } catch (error) {
+      toast.error('Failed to toggle special');
+    }
+  };
+
+  const editSpecial = (special) => {
+    setEditingSpecial(special);
+    setSpecialForm({
+      name: special.name,
+      description: special.description,
+      original_price: special.original_price.toString(),
+      special_price: special.special_price.toString(),
+      image: special.image || '',
+      badge: special.badge
+    });
+    setShowSpecialForm(true);
+  };
+
+  const resetSpecialForm = () => {
+    setSpecialForm({
+      name: '',
+      description: '',
+      original_price: '',
+      special_price: '',
+      image: '',
+      badge: "Today's Special"
+    });
+    setEditingSpecial(null);
+    setShowSpecialForm(false);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#8B0000] to-[#6B0000] flex items-center justify-center p-4">
