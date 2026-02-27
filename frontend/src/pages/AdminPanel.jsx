@@ -47,6 +47,7 @@ const AdminPanel = () => {
     if (auth === 'true') {
       setIsAuthenticated(true);
       fetchOrders();
+      fetchSpecials();
     }
   }, []);
 
@@ -60,6 +61,7 @@ const AdminPanel = () => {
       setIsAuthenticated(true);
       toast.success('Login successful!');
       fetchOrders();
+      fetchSpecials();
     } else {
       toast.error('Invalid credentials');
     }
