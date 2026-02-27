@@ -17,13 +17,31 @@ from routes import orders, menu, payment
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Environment variables with defaults for development
+MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.getenv('DB_NAME', 'restaurant_db')
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+
+# Validate required environment variables
+if MONGO_URL == 'mongodb://localhost:27017' and ENVIRONMENT == 'production':
+    raise ValueError("❌ MONGO_URL must be set for production (use MongoDB Atlas URL)")
+
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+try:
+    client = AsyncIOMotorClient(MONGO_URL)
+    db = client[DB_NAME]
+    logger_init = logging.getLogger(__name__)
+    logger_init.info(f"✓ Database: {DB_NAME} configured")
+except Exception as e:
+    logging.error(f"Failed to connect to MongoDB: {str(e)}")
+    raise
 
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(
+    title="Restaurant Ordering API",
+    description="Production-ready restaurant ordering system",
+    version="1.0.0"
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -85,14 +103,15 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
+    allow_origins=os.getenv('CORS_ORIGINS', '*').split(',') if ENVIRONMENT == 'development' else os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
 # Configure logging
+log_level = logging.DEBUG if ENVIRONMENT == 'development' else logging.INFO
 logging.basicConfig(
-    level=logging.INFO,
+    level=log_level,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
@@ -100,3 +119,7 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
