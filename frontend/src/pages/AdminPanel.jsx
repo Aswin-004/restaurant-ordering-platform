@@ -289,15 +289,44 @@ const AdminPanel = () => {
             <span>Logout</span>
           </Button>
         </div>
+        {/* Tabs */}
+        <div className="container mx-auto px-4 pb-2">
+          <div className="flex gap-4 border-b">
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`pb-2 px-4 font-semibold flex items-center gap-2 transition-colors ${
+                activeTab === 'orders'
+                  ? 'border-b-2 border-[#8B0000] text-[#8B0000]'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Package className="w-5 h-5" />
+              Orders
+            </button>
+            <button
+              onClick={() => setActiveTab('specials')}
+              className={`pb-2 px-4 font-semibold flex items-center gap-2 transition-colors ${
+                activeTab === 'specials'
+                  ? 'border-b-2 border-[#8B0000] text-[#8B0000]'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Sparkles className="w-5 h-5" />
+              Today's Specials
+            </button>
+          </div>
+        </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="text-3xl font-bold text-[#8B0000] mb-2">{orders.length}</div>
-            <div className="text-gray-600">Total Orders</div>
-          </div>
+        {activeTab === 'orders' ? (
+          <>
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl font-bold text-[#8B0000] mb-2">{orders.length}</div>
+                <div className="text-gray-600">Total Orders</div>
+              </div>
           <div className="bg-white rounded-xl p-6 shadow-md">
             <div className="text-3xl font-bold text-yellow-600 mb-2">
               {orders.filter(o => o.status === 'pending').length}
