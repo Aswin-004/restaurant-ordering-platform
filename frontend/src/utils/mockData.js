@@ -147,12 +147,12 @@ export const whyChooseUs = [
   {
     icon: "DollarSign",
     title: "Affordable Pricing",
-    description: "Just ₹500 for two people with generous portions"
+    description: "Great value with generous portions"
   },
   {
     icon: "MapPin",
     title: "Near SRM University",
-    description: "Just minutes away from campus - perfect for students"
+    description: "Conveniently located in Potheri"
   },
   {
     icon: "Leaf",

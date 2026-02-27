@@ -81,22 +81,6 @@ const BestSellers = ({ onOrderClick }) => {
             </div>
           ))}
         </div>
-
-        {/* Student Combo Banner */}
-        <div className="mt-12 bg-gradient-to-r from-[#8B0000] to-[#6B0000] rounded-2xl p-8 text-center text-white">
-          <h3 className="text-2xl md:text-3xl font-bold mb-3">
-            🎓 Student Combo Offers Available!
-          </h3>
-          <p className="text-lg mb-4">
-            Special pricing for SRM University students - Just show your ID card
-          </p>
-          <button
-            onClick={onOrderClick}
-            className="bg-[#D4AF37] text-[#8B0000] px-8 py-3 rounded-lg font-bold hover:bg-[#C49F27] transition-colors"
-          >
-            View Student Offers
-          </button>
-        </div>
       </div>
     </section>
   );

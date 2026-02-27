@@ -70,8 +70,8 @@ const Hero = ({ onOrderClick, onMenuClick }) => {
 
           {/* Urgency Banner */}
           <div className="mt-8 inline-block">
-            <div className="bg-[#D4AF37] text-[#8B0000] px-6 py-3 rounded-lg font-bold text-lg animate-pulse">
-              🔥 Hungry? We're Open Now!
+            <div className="bg-[#D4AF37] text-[#8B0000] px-6 py-3 rounded-lg font-bold text-lg">
+              🔥 Open Now • Fast Delivery!
             </div>
           </div>
         </div>

@@ -110,10 +110,10 @@ const Location = () => {
             {/* Quick Info */}
             <div className="bg-gradient-to-br from-[#D4AF37] to-[#C49F27] rounded-2xl p-6 text-center text-white">
               <p className="text-lg font-semibold mb-2">
-                🎓 Just 5 Minutes from SRM University
+                📍 Just Minutes from SRM University
               </p>
               <p className="text-sm">
-                Perfect spot for students, families, and food lovers!
+                Perfect spot for delicious food!
               </p>
             </div>
           </div>

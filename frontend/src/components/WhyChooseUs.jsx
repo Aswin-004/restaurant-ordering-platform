@@ -18,13 +18,13 @@ const WhyChooseUs = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="inline-block bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
-            <span className="text-[#8B0000] font-semibold">Why Students Love Us</span>
+            <span className="text-[#8B0000] font-semibold">Why Choose Us</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-[#8B0000] mb-4">
             Why Choose Classic Restaurant?
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Your perfect dining destination near SRM University
+            Your perfect dining destination in Potheri
           </p>
         </div>
 
