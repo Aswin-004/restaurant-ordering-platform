@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, LogOut, Package, Clock, CheckCircle, X as XIcon } from 'lucide-react';
+import { Lock, Eye, EyeOff, LogOut, Package, Clock, CheckCircle, X as XIcon, Sparkles, Plus, Trash2, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -23,6 +23,23 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState('orders');
+  
+  // Specials state
+  const [specials, setSpecials] = useState([]);
+  const [specialsLoading, setSpecialsLoading] = useState(false);
+  const [showSpecialForm, setShowSpecialForm] = useState(false);
+  const [editingSpecial, setEditingSpecial] = useState(null);
+  const [specialForm, setSpecialForm] = useState({
+    name: '',
+    description: '',
+    original_price: '',
+    special_price: '',
+    image: '',
+    badge: "Today's Special"
+  });
 
   useEffect(() => {
     // Check if already authenticated
