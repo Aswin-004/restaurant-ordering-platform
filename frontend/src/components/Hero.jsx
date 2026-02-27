@@ -77,13 +77,13 @@ const Hero = ({ onOrderClick, onMenuClick }) => {
         </div>
       </div>
 
-      {/* Student Offer Badge - Floating */}
+      {/* Price Badge - Floating */}
       <div className="absolute bottom-8 right-8 hidden lg:block">
         <div className="bg-white p-6 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
           <div className="text-center">
             <div className="text-3xl font-bold text-[#8B0000] mb-1">₹500</div>
             <div className="text-sm text-gray-600 font-medium">For Two People</div>
-            <div className="mt-2 text-xs text-[#D4AF37] font-semibold">Student Combos Available</div>
+            <div className="mt-2 text-xs text-[#D4AF37] font-semibold">Best Value Meals</div>
           </div>
         </div>
       </div>
