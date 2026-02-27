@@ -9,6 +9,7 @@ import { CartProvider } from './contexts/CartContext';
 // Components
 import Header from './components/Header';
 import Hero from './components/Hero';
+import TodaysSpecial from './components/TodaysSpecial';
 import BestSellers from './components/BestSellers';
 import WhyChooseUs from './components/WhyChooseUs';
 import Reviews from './components/Reviews';
@@ -75,6 +76,7 @@ const HomePage = () => {
       <Header />
       <main>
         <Hero onOrderClick={handleOrderClick} onMenuClick={handleMenuClick} />
+        <TodaysSpecial onOrderClick={handleOrderClick} />
         <BestSellers onOrderClick={handleOrderClick} />
         <WhyChooseUs />
         <Reviews />
