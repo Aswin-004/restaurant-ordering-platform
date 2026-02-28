@@ -7,14 +7,16 @@
 ## 📋 Table of Contents
 1. [Pre-Deployment Checklist](#pre-deployment-checklist)
 2. [Step 1: MongoDB Atlas Setup](#step-1-mongodb-atlas-setup)
-3. [Step 2: Razorpay Configuration](#step-2-razorpay-configuration)
-4. [Step 3: Backend Deployment (Render)](#step-3-backend-deployment-render)
-5. [Step 4: Frontend Deployment (Vercel)](#step-4-frontend-deployment-vercel)
-6. [Step 5: Custom Domain Setup](#step-5-custom-domain-setup)
-7. [Step 6: Security Hardening](#step-6-security-hardening)
-8. [Step 7: Testing Production](#step-7-testing-production)
-9. [Step 8: Backup & Monitoring](#step-8-backup--monitoring)
-10. [Troubleshooting](#troubleshooting)
+3. [Step 2: MongoDB Schema & Index Design](#step-2-mongodb-schema--index-design-reference)
+4. [Step 3: Scaling Beyond M0](#step-3-scaling-beyond-m0-when--how)
+5. [Step 4: Razorpay Configuration](#step-3-old-step-2-razorpay-configuration)
+6. [Step 5: Backend Deployment (Render)](#step-3-backend-deployment-render)
+7. [Step 6: Frontend Deployment (Vercel)](#step-4-frontend-deployment-vercel)
+8. [Step 7: Custom Domain Setup](#step-5-custom-domain-setup)
+9. [Step 8: Security Hardening](#step-6-security-hardening)
+10. [Step 9: Testing Production](#step-7-testing-production)
+11. [Step 10: Backup & Monitoring](#step-8-backup--monitoring)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -88,17 +90,386 @@
 - Replace `<password>` with the actual password you created
 - Example: `mongodb+srv://restaurant_admin:MySecurePassword123@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
 
-### G. Create Database Collections
-1. In MongoDB Atlas, click **"Browse Collections"**
-2. Create database: `restaurant_db`
-3. Create collections:
-   - `orders`
-   - `menu_items`
-   - `deliveries` (optional)
+### G. Create Database Collections (Using Script)
+Instead of manual creation, use the automated setup script below in **Step 1H**.
 
 ---
 
-## Step 2: Razorpay Configuration
+### H. Automated Setup Script (RECOMMENDED)
+Run this script to auto-create all collections with proper indexes and schema:
+
+**Option 1: Using MongoDB Atlas UI Web Shell**
+1. In MongoDB Atlas, click **"Browse Collections"**
+2. Click **"+"** to create new database
+3. Name: `restaurant_db`
+4. Click **"Create"**
+5. Click **">"** next to database name to open **"Database Tools"** → **"Web Shell"**
+6. Paste this script:
+
+```javascript
+// Create orders collection with schema and indexes
+db.createCollection("orders", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["order_number", "customer_name", "phone", "items", "total", "status", "created_at"],
+      properties: {
+        order_number: {
+          bsonType: "string",
+          description: "Unique order ID (e.g., ORD-20260227-001)"
+        },
+        customer_name: {
+          bsonType: "string",
+          minLength: 2,
+          maxLength: 100,
+          description: "Customer's full name"
+        },
+        phone: {
+          bsonType: "string",
+          pattern: "^[0-9]{10}$",
+          description: "10-digit phone number"
+        },
+        address: {
+          bsonType: "string",
+          description: "Delivery address"
+        },
+        items: {
+          bsonType: "string",
+          description: "Items ordered (JSON format)"
+        },
+        subtotal: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Subtotal before delivery charge"
+        },
+        delivery_charge: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Delivery charge in rupees"
+        },
+        total: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Final total amount"
+        },
+        order_type: {
+          bsonType: "string",
+          enum: ["delivery", "pickup"],
+          description: "Delivery or Pickup"
+        },
+        status: {
+          bsonType: "string",
+          enum: ["pending", "confirmed", "preparing", "ready", "out_for_delivery", "delivered", "cancelled"],
+          description: "Order status"
+        },
+        payment_method: {
+          bsonType: "string",
+          enum: ["razorpay", "cash", "card"],
+          description: "Payment method"
+        },
+        payment_status: {
+          bsonType: "string",
+          enum: ["pending", "success", "failed"],
+          description: "Payment status"
+        },
+        razorpay_order_id: {
+          bsonType: "string",
+          description: "Razorpay order ID for payment"
+        },
+        razorpay_payment_id: {
+          bsonType: "string",
+          description: "Razorpay payment ID after payment"
+        },
+        created_at: {
+          bsonType: "date",
+          description: "Order creation timestamp"
+        },
+        updated_at: {
+          bsonType: "date",
+          description: "Last update timestamp"
+        }
+      }
+    }
+  }
+});
+
+// Create indexes for orders
+db.orders.createIndex({ "order_number": 1 }, { unique: true });
+db.orders.createIndex({ "customer_name": 1 });
+db.orders.createIndex({ "phone": 1 });
+db.orders.createIndex({ "status": 1 });
+db.orders.createIndex({ "created_at": -1 });
+db.orders.createIndex({ "payment_status": 1 });
+db.orders.createIndex({ "razorpay_order_id": 1 });
+
+// Create menu_items collection
+db.createCollection("menu_items", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name", "price", "description"],
+      properties: {
+        name: {
+          bsonType: "string",
+          minLength: 2,
+          maxLength: 100,
+          description: "Item name"
+        },
+        description: {
+          bsonType: "string",
+          description: "Item description"
+        },
+        price: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Price in rupees"
+        },
+        category: {
+          bsonType: "string",
+          enum: ["biryani", "curry", "bread", "dessert", "beverages"],
+          description: "Item category"
+        },
+        image: {
+          bsonType: "string",
+          description: "Image URL"
+        },
+        available: {
+          bsonType: "bool",
+          description: "Availability status"
+        },
+        created_at: {
+          bsonType: "date",
+          description: "Creation timestamp"
+        }
+      }
+    }
+  }
+});
+
+// Create indexes for menu_items
+db.menu_items.createIndex({ "name": 1 });
+db.menu_items.createIndex({ "category": 1 });
+db.menu_items.createIndex({ "available": 1 });
+db.menu_items.createIndex({ "price": 1 });
+
+// Create deliveries collection (optional)
+db.createCollection("deliveries", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["order_id", "status", "created_at"],
+      properties: {
+        order_id: {
+          bsonType: "string",
+          description: "Reference to order"
+        },
+        status: {
+          bsonType: "string",
+          enum: ["pending", "assigned", "in_transit", "delivered"],
+          description: "Delivery status"
+        },
+        driver_name: {
+          bsonType: "string",
+          description: "Assigned driver name"
+        },
+        driver_phone: {
+          bsonType: "string",
+          description: "Driver contact"
+        },
+        vehicle: {
+          bsonType: "string",
+          description: "Vehicle type"
+        },
+        created_at: {
+          bsonType: "date",
+          description: "Assignment timestamp"
+        },
+        delivered_at: {
+          bsonType: "date",
+          description: "Delivery completion timestamp"
+        }
+      }
+    }
+  }
+});
+
+// Create indexes for deliveries
+db.deliveries.createIndex({ "order_id": 1 });
+db.deliveries.createIndex({ "status": 1 });
+db.deliveries.createIndex({ "created_at": -1 });
+
+// Insert sample menu items
+db.menu_items.insertMany([
+  {
+    name: "Hyderabadi Chicken Biryani",
+    description: "Traditional Hyderabadi biryani with tender chicken",
+    price: 250,
+    category: "biryani",
+    available: true,
+    created_at: new Date()
+  },
+  {
+    name: "Paneer Butter Masala",
+    description: "Creamy paneer curry with special spices",
+    price: 200,
+    category: "curry",
+    available: true,
+    created_at: new Date()
+  },
+  {
+    name: "Garlic Naan",
+    description: "Soft naan with garlic and butter",
+    price: 40,
+    category: "bread",
+    available: true,
+    created_at: new Date()
+  },
+  {
+    name: "Gulab Jamun",
+    description: "Sweet syrup soaked milk solids (4 pieces)",
+    price: 80,
+    category: "dessert",
+    available: true,
+    created_at: new Date()
+  },
+  {
+    name: "Mango Lassi",
+    description: "Refreshing yogurt-based mango drink",
+    price: 60,
+    category: "beverages",
+    available: true,
+    created_at: new Date()
+  }
+]);
+
+print("✓ Database setup complete!");
+print("✓ Collections created: orders, menu_items, deliveries");
+print("✓ Indexes created for optimal performance");
+print("✓ Sample menu items inserted");
+```
+
+7. Click **"Run"** to execute
+8. ✓ Success message will appear
+
+---
+
+## Step 2: MongoDB Schema & Index Design Reference
+
+### Collection: `orders`
+**Purpose:** Store all customer orders
+
+**Key Fields:**
+- `order_number` (String, Unique Index) - Unique order ID
+- `customer_name` (String, Indexed) - For filtering by customer
+- `status` (String, Indexed) - For filtering by status
+- `created_at` (Date, Indexed Descending) - For sorting by newest first
+- `razorpay_order_id` (String, Indexed) - For payment tracking
+
+**Index Strategy:**
+```
+orders
+├── order_number (UNIQUE) - Fast lookups by order ID
+├── status - Filter orders by status (pending, delivered, etc.)
+├── customer_name - Search orders by customer
+├── phone - Search by phone number
+├── created_at DESC - Show latest orders first
+└── payment_status - Filter by payment status
+```
+
+### Collection: `menu_items`
+**Purpose:** Store restaurant menu
+
+**Key Fields:**
+- `name` (String, Indexed) - Menu item name
+- `category` (String, Indexed) - For filtering by type (biryani, curry, etc.)
+- `price` (Double) - Item price
+- `available` (Boolean, Indexed) - Show only available items
+
+**Index Strategy:**
+```
+menu_items
+├── name - Search items by name
+├── category - Filter by food category
+├── available - Show only available items
+└── price - Sort by price
+```
+
+### Collection: `deliveries`
+**Purpose:** Track delivery status (optional)
+
+**Key Fields:**
+- `order_id` (String, Indexed) - Reference to order
+- `status` (String, Indexed) - Delivery status
+- `created_at` (Date, Indexed) - Track timing
+
+**Index Strategy:**
+```
+deliveries
+├── order_id - Match with orders
+├── status - Filter by delivery status
+└── created_at - Timeline tracking
+```
+
+---
+
+## Step 3: Scaling Beyond M0 (When & How)
+
+### When to Upgrade from M0 (Free)
+
+**Upgrade to M2/M5 when:**
+- ✓ 5,000+ orders per month
+- ✓ 500+ concurrent users
+- ✓ Database size > 1GB
+- ✓ More than 3-4 seconds query times
+
+**Upgrade to M10 when:**
+- ✓ 50,000+ orders per month
+- ✓ 5,000+ concurrent users
+- ✓ Database size > 10GB
+- ✓ Need for automated backups & monitoring
+
+### MongoDB Atlas Pricing (as of 2026)
+
+| Tier | Monthly Cost | Storage | Use Case |
+|------|-------------|---------|----------|
+| **M0** | **FREE** | 512 MB | Testing, small apps |
+| **M2** | $9/month | 2 GB | Growing restaurants |
+| **M5** | $57/month | 5 GB | Medium restaurants |
+| **M10** | $81/month | 10 GB | Large restaurants |
+| **M30** | $243/month | 30 GB | Enterprise |
+
+### Upgrade Steps (When Ready)
+
+1. **Backup Current Data**
+   ```bash
+   mongodump --uri "your_connection_string" --out ./backup
+   ```
+
+2. **In MongoDB Atlas:**
+   - Go to **Clusters** → Your cluster
+   - Click **Cluster Tier**
+   - Select new tier (e.g., M10)
+   - Click **Upgrade**
+   - No downtime ✓ (automatic upgrade)
+
+3. **After Upgrade:**
+   - Tier changes automatically
+   - Connection string remains same
+   - All data preserved ✓
+   - Backup frequency increases
+   - Monitoring features unlock
+
+### Cost-Saving Tips
+
+- **Start with M0** - Sufficient for first 10,000 orders
+- **Monitor usage** - Check MongoDB Stats in Atlas dashboard
+- **Scale incrementally** - Jump to M2 ($9) before M10 ($81)
+- **Annual billing** - Save 20% with yearly commitments
+- **Set up alerts** - Avoid unexpected large bills
+
+---
+
+## Step 3 (old Step 2): Razorpay Configuration
 
 ### A. Create Razorpay Account
 1. Go to https://razorpay.com

@@ -107,7 +107,8 @@ async def create_special(special: SpecialCreate):
     # Return with datetime objects
     special_doc['created_at'] = now
     special_doc['updated_at'] = now
-    del special_doc['_id'] if '_id' in special_doc else None
+    if '_id' in special_doc:
+        del special_doc['_id']
     
     return special_doc
 

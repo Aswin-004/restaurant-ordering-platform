@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timezone
 
 # Import route modules
-from routes import orders, menu, payment, specials
+from routes import orders, menu, payment, specials, auth, admin
 
 
 ROOT_DIR = Path(__file__).parent
@@ -92,20 +92,39 @@ orders.set_database(db)
 menu.set_database(db)
 payment.set_database(db)
 specials.set_database(db)
+admin.set_database(db)
 
-# Include order and menu routes
+# Include all routes (Auth must be first)
+api_router.include_router(auth.router)
 api_router.include_router(orders.router)
 api_router.include_router(menu.router)
 api_router.include_router(payment.router)
 api_router.include_router(specials.router)
+api_router.include_router(admin.router)
 
 # Include the router in the main app
 app.include_router(api_router)
 
+# CORS Configuration
+def get_cors_origins():
+    """
+    Get CORS origins based on environment.
+    Development: Allow all origins (*)
+    Production: Use CORS_ORIGINS environment variable (comma-separated)
+    """
+    if ENVIRONMENT == 'development':
+        return ['*']
+    else:
+        # Production: Use environment variable for specific origins
+        origins_str = os.getenv('CORS_ORIGINS', 'http://localhost:3000')
+        # Split by comma and strip whitespace
+        origins = [origin.strip() for origin in origins_str.split(',') if origin.strip()]
+        return origins if origins else ['http://localhost:3000']
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.getenv('CORS_ORIGINS', '*').split(',') if ENVIRONMENT == 'development' else os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
+    allow_origins=get_cors_origins(),
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
@@ -124,4 +143,6 @@ async def shutdown_db_client():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Use port from environment variable (10000 for Render, 8000 for local development)
+    port = int(os.getenv('PORT', 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

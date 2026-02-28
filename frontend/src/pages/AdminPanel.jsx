@@ -441,6 +441,152 @@ const AdminPanel = () => {
             ))}
           </div>
         )}
+        </>
+        ) : (
+        <>
+          {/* Specials Management */}
+            <div className="bg-white rounded-xl p-6 shadow-md mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-[#8B0000]">Today's Specials</h2>
+                <button
+                  onClick={() => setShowSpecialForm(!showSpecialForm)}
+                  className="bg-[#8B0000] text-white px-4 py-2 rounded-lg hover:bg-[#6B0000] flex items-center gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Special
+                </button>
+              </div>
+
+              {showSpecialForm && (
+                <form onSubmit={handleSpecialSubmit} className="bg-gray-50 p-4 rounded-lg mb-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="Special Name"
+                      value={specialForm.name}
+                      onChange={(e) => setSpecialForm({ ...specialForm, name: e.target.value })}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Description"
+                      value={specialForm.description}
+                      onChange={(e) => setSpecialForm({ ...specialForm, description: e.target.value })}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Original Price"
+                      value={specialForm.original_price}
+                      onChange={(e) => setSpecialForm({ ...specialForm, original_price: e.target.value })}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                      step="0.01"
+                      required
+                    />
+                    <input
+                      type="number"
+                      placeholder="Special Price"
+                      value={specialForm.special_price}
+                      onChange={(e) => setSpecialForm({ ...specialForm, special_price: e.target.value })}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                      step="0.01"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Image URL"
+                      value={specialForm.image}
+                      onChange={(e) => setSpecialForm({ ...specialForm, image: e.target.value })}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Badge Text"
+                      value={specialForm.badge}
+                      onChange={(e) => setSpecialForm({ ...specialForm, badge: e.target.value })}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                    >
+                      {editingSpecial ? 'Update Special' : 'Create Special'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={resetSpecialForm}
+                      className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {specialsLoading ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 border-4 border-[#8B0000] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading specials...</p>
+                </div>
+              ) : specials.length === 0 ? (
+                <div className="bg-gray-100 rounded-lg p-12 text-center">
+                  <Sparkles className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-600 text-lg">No specials yet</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {specials.map((special) => (
+                    <div key={special.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-bold text-lg text-[#8B0000]">{special.name}</h3>
+                          <p className="text-sm text-gray-600">{special.description}</p>
+                        </div>
+                        <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs font-semibold">
+                          {special.badge}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <p className="text-sm text-gray-500 line-through">₹{special.original_price}</p>
+                          <p className="text-lg font-bold text-green-600">₹{special.special_price}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => editSpecial(special)}
+                          className="flex-1 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-sm flex items-center justify-center gap-1"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => toggleSpecial(special.id)}
+                          className={`flex-1 px-3 py-2 rounded text-sm flex items-center justify-center gap-1 ${
+                            special.active
+                              ? 'bg-green-600 text-white hover:bg-green-700'
+                              : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                          }`}
+                        >
+                          {special.active ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => deleteSpecial(special.id)}
+                          className="bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Order Detail Modal */}
