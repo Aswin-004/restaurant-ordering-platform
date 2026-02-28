@@ -84,28 +84,36 @@ const AdminPanel = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  e.preventDefault();
+  setIsLoading(true);
 
-    try {
-      const response = await axios.post(`${API}/auth/login`, {
-        username: username,
-        password: password
-      });
+  console.log("API inside component:", API);
 
-      // Store JWT token
+  try {
+    const response = await axios.post(`${API}/auth/login`, {
+      username,
+      password
+    });
+
+    console.log("Login response:", response.data);
+
+    if (response.data.access_token) {
       localStorage.setItem('admin_token', response.data.access_token);
       setIsAuthenticated(true);
       setPassword('');
       toast.success(`Welcome ${response.data.username}!`);
       fetchOrders();
       fetchSpecials();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'Login failed');
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error('Login failed: No access token received');
     }
-  };
+  } catch (error) {
+    console.log("Login error:", error.response);
+    toast.error(error.response?.data?.detail || 'Login failed');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleLogout = async () => {
     try {
