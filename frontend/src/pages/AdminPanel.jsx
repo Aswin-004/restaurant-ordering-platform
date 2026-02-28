@@ -87,7 +87,7 @@ const AdminPanel = () => {
   e.preventDefault();
   setIsLoading(true);
 
-  console.log("API inside component:", API);
+  console.log("API VALUE:", API);
 
   try {
     const response = await axios.post(`${API}/auth/login`, {
@@ -95,7 +95,7 @@ const AdminPanel = () => {
       password
     });
 
-    console.log("Login response:", response.data);
+    console.log("LOGIN RESPONSE:", response);
 
     if (response.data.access_token) {
       localStorage.setItem('admin_token', response.data.access_token);
@@ -108,7 +108,7 @@ const AdminPanel = () => {
       toast.error('Login failed: No access token received');
     }
   } catch (error) {
-    console.log("Login error:", error.response);
+    console.log("LOGIN ERROR:", error);
     toast.error(error.response?.data?.detail || 'Login failed');
   } finally {
     setIsLoading(false);
