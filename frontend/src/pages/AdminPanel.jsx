@@ -6,7 +6,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = BACKEND_URL;
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const AdminPanel = () => {
 
   const verifyToken = async (token) => {
     try {
-      const response = await axios.get(`${API}/auth/verify`, {
+      const response = await axios.get(`${API}/api/auth/verify`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +90,7 @@ const AdminPanel = () => {
   console.log("API VALUE:", API);
 
   try {
-    const response = await axios.post(`${API}/auth/login`, {
+    const response = await axios.post(`${API}/api/auth/login`, {
       username,
       password
     });
@@ -117,7 +117,7 @@ const AdminPanel = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${API}/auth/logout`, {}, {
+      await axios.post(`${API}/api/auth/logout`, {}, {
         headers: getAuthHeaders()
       });
     } catch (error) {
@@ -146,7 +146,7 @@ const AdminPanel = () => {
     
     try {
       const response = await axios.post(
-        `${API}/auth/change-password`,
+        `${API}/api/auth/change-password`,
         {
           old_password: changePasswordForm.old_password,
           new_password: changePasswordForm.new_password
@@ -169,7 +169,7 @@ const AdminPanel = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/orders`, {
+      const response = await axios.get(`${API}/api/orders`, {
         headers: getAuthHeaders()
       });
       setOrders(response.data);
@@ -182,7 +182,7 @@ const AdminPanel = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      await axios.patch(`${API}/orders/${orderId}/status`, 
+      await axios.patch(`${API}/api/orders/${orderId}/status`, 
         { status: newStatus },
         { headers: getAuthHeaders() }
       );
@@ -215,7 +215,7 @@ const AdminPanel = () => {
   const fetchSpecials = async () => {
     setSpecialsLoading(true);
     try {
-      const response = await axios.get(`${API}/specials?active_only=false`, {
+      const response = await axios.get(`${API}/api/specials?active_only=false`, {
         headers: getAuthHeaders()
       });
       setSpecials(response.data);
@@ -236,12 +236,12 @@ const AdminPanel = () => {
       };
 
       if (editingSpecial) {
-        await axios.put(`${API}/specials/${editingSpecial.id}`, payload, {
+        await axios.put(`${API}/api/specials/${editingSpecial.id}`, payload, {
           headers: getAuthHeaders()
         });
         toast.success('Special updated!');
       } else {
-        await axios.post(`${API}/specials`, payload, {
+        await axios.post(`${API}/api/specials`, payload, {
           headers: getAuthHeaders()
         });
         toast.success('Special created!');
@@ -257,7 +257,7 @@ const AdminPanel = () => {
   const deleteSpecial = async (id) => {
     if (!window.confirm('Are you sure you want to delete this special?')) return;
     try {
-      await axios.delete(`${API}/specials/${id}`, {
+      await axios.delete(`${API}/api/specials/${id}`, {
         headers: getAuthHeaders()
       });
       toast.success('Special deleted!');
@@ -269,7 +269,7 @@ const AdminPanel = () => {
 
   const toggleSpecial = async (id) => {
     try {
-      await axios.patch(`${API}/specials/${id}/toggle`);
+      await axios.patch(`${API}/api/specials/${id}/toggle`);
       toast.success('Special toggled!');
       fetchSpecials();
     } catch (error) {
