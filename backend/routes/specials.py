@@ -51,16 +51,16 @@ class SpecialUpdate(BaseModel):
 @router.get("", response_model=List[SpecialResponse])
 async def get_specials(active_only: bool = True):
     """Get all specials (optionally only active ones)"""
-    query = {"is_active": True} if active_only else {}
+    query = {"active": True} if active_only else {}
     specials = await db.specials.find(query, {"_id": 0}).to_list(100)
-    
+
     # Convert ISO string timestamps back to datetime
     for special in specials:
         if isinstance(special.get('created_at'), str):
             special['created_at'] = datetime.fromisoformat(special['created_at'])
         if isinstance(special.get('updated_at'), str):
             special['updated_at'] = datetime.fromisoformat(special['updated_at'])
-    
+
     return specials
 
 

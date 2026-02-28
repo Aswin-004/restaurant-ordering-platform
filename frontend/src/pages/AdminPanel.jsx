@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, LogOut, Package, Clock, CheckCircle, X as XIcon, Sparkles, Plus, Trash2, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Lock, Eye, EyeOff, LogOut, Package, Clock, CheckCircle, X as XIcon, Sparkles, Plus, Trash2, Edit2, ToggleLeft, ToggleRight, Key } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -8,16 +8,23 @@ import toast from 'react-hot-toast';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'classic@admin2026'; // Store in .env in production
-
 const AdminPanel = () => {
   const navigate = useNavigate();
+  
+  // Login state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Change password state
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [changePasswordForm, setChangePasswordForm] = useState({
+    old_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,44 +49,121 @@ const AdminPanel = () => {
   });
 
   useEffect(() => {
-    // Check if already authenticated
-    const auth = localStorage.getItem('admin_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-      fetchOrders();
-      fetchSpecials();
+    // Check if JWT token exists and is valid
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+      verifyToken(token);
     }
   }, []);
 
-  const handleLogin = (e) => {
+  const verifyToken = async (token) => {
+    try {
+      const response = await axios.get(`${API}/auth/verify`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.data.authenticated) {
+        setIsAuthenticated(true);
+        setUsername(response.data.username);
+        fetchOrders();
+        fetchSpecials();
+      }
+    } catch (error) {
+      localStorage.removeItem('admin_token');
+      setIsAuthenticated(false);
+    }
+  };
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('admin_token');
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple authentication
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      localStorage.setItem('admin_auth', 'true');
+    try {
+      const response = await axios.post(`${API}/auth/login`, {
+        username: username,
+        password: password
+      });
+
+      // Store JWT token
+      localStorage.setItem('admin_token', response.data.access_token);
       setIsAuthenticated(true);
-      toast.success('Login successful!');
+      setPassword('');
+      toast.success(`Welcome ${response.data.username}!`);
       fetchOrders();
       fetchSpecials();
-    } else {
-      toast.error('Invalid credentials');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Login failed');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_auth');
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API}/auth/logout`, {}, {
+        headers: getAuthHeaders()
+      });
+    } catch (error) {
+      // Continue logout even if API fails
+    }
+    
+    localStorage.removeItem('admin_token');
     setIsAuthenticated(false);
     setUsername('');
     setPassword('');
     toast.success('Logged out successfully');
   };
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    
+    if (changePasswordForm.new_password !== changePasswordForm.confirm_password) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    
+    if (changePasswordForm.new_password.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
+    
+    try {
+      const response = await axios.post(
+        `${API}/auth/change-password`,
+        {
+          old_password: changePasswordForm.old_password,
+          new_password: changePasswordForm.new_password
+        },
+        { headers: getAuthHeaders() }
+      );
+      
+      toast.success(response.data.message);
+      setShowChangePassword(false);
+      setChangePasswordForm({
+        old_password: '',
+        new_password: '',
+        confirm_password: ''
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to change password');
+    }
+  };
+
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/orders`);
+      const response = await axios.get(`${API}/orders`, {
+        headers: getAuthHeaders()
+      });
       setOrders(response.data);
     } catch (error) {
       toast.error('Failed to fetch orders');
@@ -90,9 +174,10 @@ const AdminPanel = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      await axios.patch(`${API}/orders/${orderId}/status`, {
-        status: newStatus
-      });
+      await axios.patch(`${API}/orders/${orderId}/status`, 
+        { status: newStatus },
+        { headers: getAuthHeaders() }
+      );
       toast.success('Order status updated');
       fetchOrders();
       setSelectedOrder(null);
@@ -122,7 +207,9 @@ const AdminPanel = () => {
   const fetchSpecials = async () => {
     setSpecialsLoading(true);
     try {
-      const response = await axios.get(`${API}/specials?active_only=false`);
+      const response = await axios.get(`${API}/specials?active_only=false`, {
+        headers: getAuthHeaders()
+      });
       setSpecials(response.data);
     } catch (error) {
       console.log('Failed to fetch specials');
@@ -141,10 +228,14 @@ const AdminPanel = () => {
       };
 
       if (editingSpecial) {
-        await axios.put(`${API}/specials/${editingSpecial.id}`, payload);
+        await axios.put(`${API}/specials/${editingSpecial.id}`, payload, {
+          headers: getAuthHeaders()
+        });
         toast.success('Special updated!');
       } else {
-        await axios.post(`${API}/specials`, payload);
+        await axios.post(`${API}/specials`, payload, {
+          headers: getAuthHeaders()
+        });
         toast.success('Special created!');
       }
       
@@ -158,7 +249,9 @@ const AdminPanel = () => {
   const deleteSpecial = async (id) => {
     if (!window.confirm('Are you sure you want to delete this special?')) return;
     try {
-      await axios.delete(`${API}/specials/${id}`);
+      await axios.delete(`${API}/specials/${id}`, {
+        headers: getAuthHeaders()
+      });
       toast.success('Special deleted!');
       fetchSpecials();
     } catch (error) {
@@ -281,13 +374,22 @@ const AdminPanel = () => {
             <h1 className="text-2xl font-bold text-[#8B0000]">Admin Dashboard</h1>
             <p className="text-sm text-gray-600">Classic Restaurant</p>
           </div>
-          <Button
-            onClick={handleLogout}
-            className="bg-red-600 text-white hover:bg-red-700 flex items-center space-x-2"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Logout</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowChangePassword(true)}
+              className="bg-blue-600 text-white hover:bg-blue-700 flex items-center space-x-2"
+            >
+              <Key className="w-4 h-4" />
+              <span>Change Password</span>
+            </Button>
+            <Button
+              onClick={handleLogout}
+              className="bg-red-600 text-white hover:bg-red-700 flex items-center space-x-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
+            </Button>
+          </div>
         </div>
         {/* Tabs */}
         <div className="container mx-auto px-4 pb-2">
@@ -665,6 +767,92 @@ const AdminPanel = () => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-2xl w-96 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-[#8B0000]">Change Password</h2>
+              <button
+                onClick={() => setShowChangePassword(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XIcon className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  value={changePasswordForm.old_password}
+                  onChange={(e) => setChangePasswordForm({
+                    ...changePasswordForm,
+                    old_password: e.target.value
+                  })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000]"
+                  placeholder="Enter current password"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  value={changePasswordForm.new_password}
+                  onChange={(e) => setChangePasswordForm({
+                    ...changePasswordForm,
+                    new_password: e.target.value
+                  })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000]"
+                  placeholder="Enter new password (minimum 8 characters)"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  value={changePasswordForm.confirm_password}
+                  onChange={(e) => setChangePasswordForm({
+                    ...changePasswordForm,
+                    confirm_password: e.target.value
+                  })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000]"
+                  placeholder="Confirm new password"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white hover:bg-blue-700 py-3 font-semibold"
+                >
+                  Update Password
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setShowChangePassword(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 hover:bg-gray-400 py-3 font-semibold"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

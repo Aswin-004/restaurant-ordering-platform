@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timezone
 
 # Import route modules
-from routes import orders, menu, payment, specials, auth, admin
+from backend.routes import orders, menu, payment, specials, auth, admin
 
 
 ROOT_DIR = Path(__file__).parent
@@ -93,6 +93,7 @@ menu.set_database(db)
 payment.set_database(db)
 specials.set_database(db)
 admin.set_database(db)
+auth.set_database(db)
 
 # Include all routes (Auth must be first)
 api_router.include_router(auth.router)

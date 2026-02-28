@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
-from routes.auth import get_current_admin
+from backend.routes.auth import get_current_admin
 import logging
 
 logger = logging.getLogger(__name__)
