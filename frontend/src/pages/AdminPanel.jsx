@@ -6,7 +6,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = BACKEND_URL;
+const API = import.meta.env.VITE_BACKEND_URL;
 
 const AdminPanel = () => {
   const navigate = useNavigate();
