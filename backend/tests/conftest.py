@@ -26,8 +26,8 @@ os.environ['JWT_SECRET'] = JWT_SECRET
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Import after path configuration and JWT_SECRET is set
-from backend.server import app
-from backend.routes import auth, orders, menu, payment, specials, admin
+from server import app
+from routes import auth, orders, menu, payment, specials, admin
 
 # Configuration
 TEST_MONGO_URL = os.getenv('TEST_MONGO_URL', 'mongodb://localhost:27017')

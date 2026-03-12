@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
-from backend.models import (
+from models import (
     OrderCreate,
     OrderResponse,
     OrderStatusUpdate,

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
-from backend.models import MenuItemCreate, MenuItemResponse, MenuItemUpdate
+from models import MenuItemCreate, MenuItemResponse, MenuItemUpdate
 from datetime import datetime
 import uuid
 
