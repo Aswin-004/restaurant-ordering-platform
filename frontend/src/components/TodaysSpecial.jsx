@@ -11,7 +11,7 @@ const TodaysSpecial = ({ onOrderClick }) => {
   const [specials, setSpecials] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
+  const { addItem } = useCart();
   const { isLocationSet } = useLocationContext();
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const TodaysSpecial = ({ onOrderClick }) => {
       return;
     }
     
-    addToCart({
+    addItem({
       name: special.name,
       price: special.special_price,
       category: "Today's Special"
