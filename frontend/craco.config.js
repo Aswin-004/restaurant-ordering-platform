@@ -47,6 +47,15 @@ const webpackConfig = {
       '@': path.resolve(__dirname, 'src'),
     },
     configure: (webpackConfig) => {
+      // Remove deprecated eslint-loader from webpack rules
+      webpackConfig.module.rules = webpackConfig.module.rules.map(rule => {
+        if (Array.isArray(rule.use)) {
+          rule.use = rule.use.filter(
+            loader => !(loader.loader && loader.loader.includes("eslint-loader"))
+          );
+        }
+        return rule;
+      });
 
       // Add ignored patterns to reduce watched directories
         webpackConfig.watchOptions = {
