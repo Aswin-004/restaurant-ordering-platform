@@ -32,9 +32,12 @@ const TodaysSpecial = ({ onOrderClick }) => {
   const fetchSpecials = async () => {
     try {
       const response = await axios.get(`${API}/specials?active_only=true`);
-      setSpecials(response.data);
+      // Ensure response.data is an array
+      const data = Array.isArray(response.data) ? response.data : [];
+      setSpecials(data);
     } catch (error) {
       console.log('No specials available');
+      setSpecials([]);
     } finally {
       setLoading(false);
     }
@@ -172,7 +175,7 @@ const TodaysSpecial = ({ onOrderClick }) => {
               
               {/* Dots indicator */}
               <div className="flex lg:flex-col gap-2">
-                {specials.map((_, idx) => (
+                {Array.isArray(specials) && specials.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentIndex(idx)}
