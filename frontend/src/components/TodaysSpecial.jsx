@@ -4,7 +4,9 @@ import axios from 'axios';
 import { useCart } from '../contexts/CartContext';
 import { useLocation as useLocationContext } from '../contexts/LocationContext';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL =
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://restaurant-api-02zg.onrender.com";
 const API = `${BACKEND_URL}/api`;
 
 const TodaysSpecial = ({ onOrderClick }) => {
