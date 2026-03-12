@@ -94,10 +94,16 @@ export const CartProvider = ({ children }) => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
-        const { items } = JSON.parse(savedCart);
-        dispatch({ type: 'LOAD_CART', payload: { items } });
+        const parsed = JSON.parse(savedCart);
+        const items = Array.isArray(parsed?.items) ? parsed.items : [];
+        // Validate each item has required fields
+        const validItems = items.filter(
+          item => item && typeof item.name === 'string' && typeof item.price === 'number' && typeof item.quantity === 'number'
+        );
+        dispatch({ type: 'LOAD_CART', payload: { items: validItems } });
       } catch (error) {
         console.error('Error loading cart:', error);
+        localStorage.removeItem('cart');
       }
     }
   }, []);

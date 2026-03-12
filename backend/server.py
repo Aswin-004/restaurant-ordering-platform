@@ -42,12 +42,18 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ---------------- CORS FIX (THIS WAS BROKEN) ----------------
+# ---------------- CORS FIX ----------------
 
+# Read allowed origins from environment variable, with sensible defaults
+cors_origins_env = os.getenv('CORS_ORIGINS', '')
 origins = [
     "http://localhost:3000",
     "https://restaurant-ordering-platform-jade.vercel.app",
+    "https://classicresturant.vercel.app",
 ]
+# Merge any extra origins from the CORS_ORIGINS env var
+if cors_origins_env:
+    origins.extend([o.strip() for o in cors_origins_env.split(',') if o.strip() and o.strip() not in origins])
 
 app.add_middleware(
     CORSMiddleware,

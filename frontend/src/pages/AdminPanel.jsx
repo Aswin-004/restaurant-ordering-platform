@@ -164,9 +164,10 @@ const AdminPanel = () => {
       const response = await axios.get(`${API}/orders`, {
         headers: getAuthHeaders()
       });
-      setOrders(response.data);
+      setOrders(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       toast.error('Failed to fetch orders');
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -210,9 +211,10 @@ const AdminPanel = () => {
       const response = await axios.get(`${API}/specials?active_only=false`, {
         headers: getAuthHeaders()
       });
-      setSpecials(response.data);
+      setSpecials(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.log('Failed to fetch specials');
+      setSpecials([]);
     } finally {
       setSpecialsLoading(false);
     }
