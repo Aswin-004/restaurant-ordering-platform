@@ -17,10 +17,10 @@ const WhyChooseUs = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-block bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
-            <span className="text-[#8B0000] font-semibold">Why Choose Us</span>
+          <div className="inline-block bg-gold/10 px-4 py-2 rounded-full mb-4">
+            <span className="text-brand-700 font-semibold">Why Choose Us</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#8B0000] mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-700 mb-4">
             Why Choose Classic Restaurant?
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -35,15 +35,15 @@ const WhyChooseUs = () => {
             return (
               <div
                 key={index}
-                className="group bg-[#FFF8DC] rounded-2xl p-8 hover:bg-[#8B0000] transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="group bg-cream rounded-2xl p-8 hover:bg-brand-700 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
               >
                 {/* Icon */}
-                <div className="w-16 h-16 bg-[#D4AF37] rounded-xl flex items-center justify-center mb-6 group-hover:bg-white transition-colors">
-                  <Icon className="w-8 h-8 text-white group-hover:text-[#8B0000]" />
+                <div className="w-16 h-16 bg-gold rounded-xl flex items-center justify-center mb-6 group-hover:bg-white transition-colors">
+                  <Icon className="w-8 h-8 text-white group-hover:text-brand-700" />
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold text-[#8B0000] mb-3 group-hover:text-white transition-colors">
+                <h3 className="text-xl font-bold text-brand-700 mb-3 group-hover:text-white transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 group-hover:text-white/90 transition-colors">
@@ -55,28 +55,28 @@ const WhyChooseUs = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-16 bg-gradient-to-br from-[#8B0000] to-[#6B0000] rounded-2xl p-8 md:p-12">
+        <div className="mt-16 bg-gradient-to-br from-brand-800 to-brand-900 rounded-2xl p-8 md:p-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl md:text-5xl font-bold text-[#D4AF37] mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gold mb-2">
                 4.0
               </div>
               <div className="text-white text-sm md:text-base">Star Rating</div>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-bold text-[#D4AF37] mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gold mb-2">
                 62+
               </div>
               <div className="text-white text-sm md:text-base">Happy Reviews</div>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-bold text-[#D4AF37] mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gold mb-2">
                 100+
               </div>
               <div className="text-white text-sm md:text-base">Menu Items</div>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-bold text-[#D4AF37] mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gold mb-2">
                 12hrs
               </div>
               <div className="text-white text-sm md:text-base">Daily Service</div>

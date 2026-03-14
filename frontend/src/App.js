@@ -26,13 +26,16 @@ import FloatingCartButton from './components/FloatingCartButton';
 // Pages
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import OrderTracking from './pages/OrderTracking';
 import AdminPanel from './pages/AdminPanel';
+import TrackOrder from "./pages/TrackOrder";
+
 
 // Hooks
 import { useLocation as useLocationContext } from './contexts/LocationContext';
 
 import './App.css';
-
+<Route path="/track-order" element={<TrackOrder />} />
 const HomePage = () => {
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
@@ -111,7 +114,9 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
+              <Route path="/track/:orderId" element={<OrderTracking />} />
               <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/track-order" element={<TrackOrder />} />
             </Routes>
           </div>
           <Toaster 

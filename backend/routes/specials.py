@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime, timezone
+from routes.auth import get_current_admin
 import uuid
 
 router = APIRouter(prefix="/specials", tags=["specials"])
@@ -51,7 +52,7 @@ class SpecialUpdate(BaseModel):
 @router.get("", response_model=List[SpecialResponse])
 async def get_specials(active_only: bool = True):
     """Get all specials (optionally only active ones)"""
-    query = {"active": True} if active_only else {}
+    query = {"is_active": True} if active_only else {}
     specials = await db.specials.find(query, {"_id": 0}).to_list(100)
 
     # Convert ISO string timestamps back to datetime
@@ -81,7 +82,7 @@ async def get_special(special_id: str):
 
 
 @router.post("", response_model=SpecialResponse)
-async def create_special(special: SpecialCreate):
+async def create_special(special: SpecialCreate, current_admin: dict = Depends(get_current_admin)):
     """Create a new special offer"""
     now = datetime.now(timezone.utc)
     
@@ -114,7 +115,7 @@ async def create_special(special: SpecialCreate):
 
 
 @router.put("/{special_id}", response_model=SpecialResponse)
-async def update_special(special_id: str, update_data: SpecialUpdate):
+async def update_special(special_id: str, update_data: SpecialUpdate, current_admin: dict = Depends(get_current_admin)):
     """Update a special offer"""
     special = await db.specials.find_one({"id": special_id})
     if not special:
@@ -149,7 +150,7 @@ async def update_special(special_id: str, update_data: SpecialUpdate):
 
 
 @router.delete("/{special_id}")
-async def delete_special(special_id: str):
+async def delete_special(special_id: str, current_admin: dict = Depends(get_current_admin)):
     """Delete a special offer"""
     result = await db.specials.delete_one({"id": special_id})
     if result.deleted_count == 0:
@@ -158,7 +159,7 @@ async def delete_special(special_id: str):
 
 
 @router.patch("/{special_id}/toggle")
-async def toggle_special(special_id: str):
+async def toggle_special(special_id: str, current_admin: dict = Depends(get_current_admin)):
     """Toggle the active status of a special"""
     special = await db.specials.find_one({"id": special_id})
     if not special:

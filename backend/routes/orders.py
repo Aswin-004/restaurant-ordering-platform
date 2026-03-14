@@ -152,6 +152,77 @@ async def create_order(order: OrderCreate):
         )
 
 
+@router.get("/number/{order_number}", response_model=OrderResponse)
+async def get_order_by_number(order_number: str):
+    """Get order by order number"""
+    try:
+        db = get_db()
+        orders_collection = db.orders
+        order = await orders_collection.find_one({"order_number": order_number})
+        if not order:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Order {order_number} not found"
+            )
+        order.pop("_id", None)
+        return OrderResponse(**order)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching order: {str(e)}"
+        )
+
+
+@router.get("/{order_id}", response_model=OrderResponse)
+async def get_order_by_id(order_id: str):
+    """Get order by ID (for tracking)"""
+    try:
+        db = get_db()
+        orders_collection = db.orders
+        order = await orders_collection.find_one({"id": order_id})
+        if not order:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Order not found"
+            )
+        order.pop("_id", None)
+        return OrderResponse(**order)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching order: {str(e)}"
+        )
+
+
+@router.patch("/{order_id}/status")
+async def update_order_status(order_id: str, update: OrderStatusUpdate):
+    """Update order status"""
+    try:
+        db = get_db()
+        orders_collection = db.orders
+        result = await orders_collection.update_one(
+            {"id": order_id},
+            {"$set": {"status": update.status.value, "updated_at": datetime.utcnow()}}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Order not found"
+            )
+        return {"message": "Order status updated", "status": update.status.value}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error updating order: {str(e)}"
+        )
+
+
 @router.get("", response_model=List[OrderResponse])
 async def get_all_orders(status_filter: str = None, limit: int = 50, skip: int = 0):
     try:

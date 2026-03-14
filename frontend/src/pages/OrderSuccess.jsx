@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, Phone, MessageCircle, Home, Clock, Package, Copy } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { CheckCircle, Phone, MessageCircle, Home, Clock, Package, Copy, ArrowRight } from 'lucide-react';
 import { restaurantInfo } from '../utils/mockData';
-import axios from 'axios';
+import { getOrderByNumber } from '../services/api';
 import toast from 'react-hot-toast';
-
-const BACKEND_URL =
-  process.env.REACT_APP_BACKEND_URL ||
-  "https://restaurant-api-02zg.onrender.com";
-const API = `${BACKEND_URL}/api`;
 
 const OrderSuccess = () => {
   const { orderNumber } = useParams();
@@ -21,7 +15,7 @@ const OrderSuccess = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await axios.get(`${API}/orders/number/${orderNumber}`);
+        const response = await getOrderByNumber(orderNumber);
         setOrderDetails(response.data);
       } catch (error) {
         toast.error('Could not fetch order details');
@@ -30,20 +24,12 @@ const OrderSuccess = () => {
       }
     };
 
-    if (orderNumber) {
-      fetchOrderDetails();
-    }
+    if (orderNumber) fetchOrderDetails();
   }, [orderNumber]);
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hi, I placed order #${orderNumber}. Can you confirm?`
-    );
-    window.open(`https://wa.me/${restaurantInfo.whatsapp.replace(/\+/g, '')}?text=${message}`, '_blank');
-  };
-
-  const handleCall = () => {
-    window.location.href = `tel:${restaurantInfo.phone}`;
+    const message = encodeURIComponent(`Hi, I placed order #${orderNumber}. Can you confirm?`);
+    window.open(`https://wa.me/${restaurantInfo.whatsapp.replace(/\+/g, '')}?text=${message}`, '_blank', 'noopener');
   };
 
   const copyOrderNumber = () => {
@@ -55,37 +41,37 @@ const OrderSuccess = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#8B0000] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading order details...</p>
+          <div className="w-14 h-14 border-4 border-brand-700 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 text-sm">Loading order details...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-16">
+    <div className="min-h-screen bg-cream py-8">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-16 h-16 text-green-600" />
+        <div className="max-w-lg mx-auto">
+          {/* Success Animation */}
+          <div className="text-center mb-8 animate-fade-in">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="w-12 h-12 text-green-500" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#8B0000] mb-2">
-              Order Placed Successfully!
+            <h1 className="text-2xl md:text-3xl font-display font-bold text-brand-800 mb-1">
+              Order Placed!
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-500 text-sm">
               Thank you for ordering from Classic Restaurant
             </p>
           </div>
 
           {/* Order Number Card */}
-          <div className="bg-gradient-to-br from-[#8B0000] to-[#6B0000] rounded-2xl p-8 text-center mb-6 shadow-xl">
-            <p className="text-white/90 mb-2">Your Order Number</p>
-            <div className="flex items-center justify-center space-x-3">
-              <h2 className="text-3xl md:text-4xl font-bold text-[#D4AF37] tracking-wider">
+          <div className="bg-gradient-to-br from-brand-700 to-brand-800 rounded-2xl p-6 text-center mb-5 shadow-xl">
+            <p className="text-white/80 text-xs uppercase tracking-wider mb-2">Order Number</p>
+            <div className="flex items-center justify-center gap-3">
+              <h2 className="text-2xl md:text-3xl font-bold text-gold tracking-wider font-display">
                 {orderNumber}
               </h2>
               <button
@@ -93,120 +79,95 @@ const OrderSuccess = () => {
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                 title="Copy order number"
               >
-                {copied ? (
-                  <CheckCircle className="w-6 h-6 text-green-400" />
-                ) : (
-                  <Copy className="w-6 h-6 text-white" />
-                )}
+                {copied ? <CheckCircle className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-white/70" />}
               </button>
             </div>
           </div>
 
           {/* Order Details */}
           {orderDetails && (
-            <div className="bg-white rounded-2xl p-6 shadow-md mb-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Order Details</h3>
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
+              <h3 className="font-bold text-gray-800 mb-4">Order Details</h3>
               
-              <div className="space-y-4">
-                {/* Status */}
-                <div className="flex items-start space-x-3">
-                  <Package className="w-5 h-5 text-[#8B0000] mt-1" />
+              <div className="space-y-3.5">
+                <div className="flex items-start gap-3">
+                  <Package className="w-4 h-4 text-brand-700 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600">Status</p>
-                    <p className="font-semibold text-gray-800 capitalize">
-                      Order Received
-                    </p>
+                    <p className="text-xs text-gray-500">Status</p>
+                    <p className="font-semibold text-sm text-gray-800 capitalize">{orderDetails.status?.replace(/_/g, ' ') || 'Order Received'}</p>
                   </div>
                 </div>
 
-                {/* Estimated Time */}
-                <div className="flex items-start space-x-3">
-                  <Clock className="w-5 h-5 text-[#8B0000] mt-1" />
+                <div className="flex items-start gap-3">
+                  <Clock className="w-4 h-4 text-brand-700 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600">Estimated Delivery/Pickup</p>
-                    <p className="font-semibold text-gray-800">30-45 minutes</p>
+                    <p className="text-xs text-gray-500">Estimated Delivery</p>
+                    <p className="font-semibold text-sm text-gray-800">45-60 minutes</p>
                   </div>
                 </div>
 
-                {/* Items */}
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 text-[#8B0000] mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-start gap-3">
+                  <svg className="w-4 h-4 text-brand-700 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 mb-2">Items Ordered</p>
-                    <p className="text-gray-800">{orderDetails.items}</p>
+                    <p className="text-xs text-gray-500 mb-1">Items Ordered</p>
+                    <p className="text-sm text-gray-700">{orderDetails.items}</p>
                   </div>
                 </div>
 
-                {/* Payment */}
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 text-[#8B0000] mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600">Payment Method</p>
-                    <p className="font-semibold text-gray-800 capitalize">
-                      {orderDetails.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment'}
-                      {orderDetails.payment_status === 'paid' && (
-                        <span className="ml-2 text-green-600 text-sm">(Paid)</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Total */}
-                <div className="border-t pt-4 flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-800">Total Amount</span>
-                  <span className="text-2xl font-bold text-[#8B0000]">
-                    ₹{orderDetails.total}
-                  </span>
+                <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
+                  <span className="font-bold text-gray-800">Total</span>
+                  <span className="text-xl font-bold text-brand-700">₹{orderDetails.total}</span>
                 </div>
               </div>
             </div>
           )}
 
           {/* Important Note */}
-          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-6 mb-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center">
-              <Phone className="w-5 h-5 mr-2 text-[#8B0000]" />
-              Important
-            </h3>
-            <p className="text-gray-700 mb-2">
-              You will receive a confirmation call from us before delivery/pickup at:
-            </p>
-            <p className="text-xl font-bold text-[#8B0000]">
-              {restaurantInfo.phone}
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5">
+            <p className="text-sm text-amber-800">
+              <span className="font-semibold">📞 Confirmation call</span> — You'll receive a call before delivery at{' '}
+              <span className="font-bold">{restaurantInfo.phone}</span>
             </p>
           </div>
 
-          {/* Contact Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Action Buttons */}
+          <div className="space-y-3">
             <button
-              onClick={handleCall}
-              className="flex items-center justify-center space-x-3 bg-white border-2 border-[#8B0000] text-[#8B0000] px-6 py-4 rounded-xl hover:bg-[#8B0000] hover:text-white transition-all font-semibold"
+              onClick={() => navigate(`/track/${orderNumber}`)}
+              className="w-full bg-brand-700 text-white hover:bg-brand py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg"
             >
-              <Phone className="w-5 h-5" />
-              <span>Call Restaurant</span>
+              <Package className="w-4 h-4" />
+              Track Order
+              <ArrowRight className="w-4 h-4" />
             </button>
-            
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => window.location.href = `tel:${restaurantInfo.phone}`}
+                className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl hover:border-brand-700 hover:text-brand-700 transition-all text-sm font-medium"
+              >
+                <Phone className="w-4 h-4" />
+                Call
+              </button>
+              <button
+                onClick={handleWhatsApp}
+                className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-xl hover:bg-[#20BA5A] transition-colors text-sm font-medium"
+              >
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </button>
+            </div>
+
             <button
-              onClick={handleWhatsApp}
-              className="flex items-center justify-center space-x-3 bg-[#25D366] text-white px-6 py-4 rounded-xl hover:bg-[#20BA5A] transition-all font-semibold"
+              onClick={() => navigate('/')}
+              className="w-full bg-gray-100 text-gray-700 hover:bg-gray-200 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-colors"
             >
-              <MessageCircle className="w-5 h-5" />
-              <span>WhatsApp Us</span>
+              <Home className="w-4 h-4" />
+              Back to Home
             </button>
           </div>
-
-          {/* Back to Home */}
-          <Button
-            onClick={() => navigate('/')}
-            className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 py-4 text-lg font-semibold flex items-center justify-center space-x-2"
-          >
-            <Home className="w-5 h-5" />
-            <span>Back to Home</span>
-          </Button>
         </div>
       </div>
     </div>

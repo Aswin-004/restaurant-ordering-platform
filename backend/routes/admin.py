@@ -46,8 +46,8 @@ async def get_dashboard(current_admin: dict = Depends(get_current_admin)):
         
         # Calculate total revenue
         pipeline = [
-            {"$match": {"status": "completed"}},
-            {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
+            {"$match": {"status": {"$in": ["completed", "delivered"]}}},
+            {"$group": {"_id": None, "total": {"$sum": "$total"}}}
         ]
         revenue_result = await orders_collection.aggregate(pipeline).to_list(1)
         total_revenue = revenue_result[0]['total'] if revenue_result else 0
@@ -113,7 +113,7 @@ async def update_order_status(
         orders_collection = db.orders
         
         # Validate status
-        valid_statuses = ["pending", "preparing", "ready", "completed", "cancelled"]
+        valid_statuses = ["pending", "confirmed", "preparing", "ready", "out_for_delivery", "delivered", "completed", "cancelled"]
         if update.status not in valid_statuses:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -121,9 +121,10 @@ async def update_order_status(
             )
         
         # Update order
+        from datetime import datetime
         result = await orders_collection.update_one(
-            {"order_id": order_id},
-            {"$set": {"status": update.status, "admin_notes": update.notes}}
+            {"id": order_id},
+            {"$set": {"status": update.status, "admin_notes": update.notes, "updated_at": datetime.utcnow()}}
         )
         
         if result.matched_count == 0:

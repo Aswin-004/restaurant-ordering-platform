@@ -3,12 +3,7 @@ import { ShoppingBag, Phone, MessageCircle, X, CheckCircle, Loader2 } from 'luci
 import { restaurantInfo, orderOptions } from '../utils/mockData';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import axios from 'axios';
-
-const BACKEND_URL =
-  process.env.REACT_APP_BACKEND_URL ||
-  "https://restaurant-api-02zg.onrender.com";
-const API = `${BACKEND_URL}/api`;
+import { createOrder } from '../services/api';
 
 const OrderSection = () => {
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
@@ -42,7 +37,7 @@ const OrderSection = () => {
 
     try {
       // Submit order to backend
-      const response = await axios.post(`${API}/orders`, {
+      const response = await createOrder({
         customer_name: orderData.name,
         phone: orderData.phone,
         address: orderData.address,
@@ -84,7 +79,7 @@ const OrderSection = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-br from-[#8B0000] to-[#6B0000] relative overflow-hidden">
+    <section className="py-16 md:py-24 bg-gradient-to-br from-brand-800 to-brand-900 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -114,13 +109,13 @@ const OrderSection = () => {
             <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <ShoppingBag className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-[#8B0000] mb-3">
+            <h3 className="text-2xl font-bold text-brand-700 mb-3">
               Order Online
             </h3>
             <p className="text-gray-600 mb-6">
               Browse menu & place order directly from our website
             </p>
-            <Button className="bg-[#8B0000] text-white hover:bg-[#6B0000] w-full">
+            <Button className="bg-brand-700 text-white hover:bg-brand w-full">
               Start Order
             </Button>
           </div>
@@ -133,13 +128,13 @@ const OrderSection = () => {
             <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <Phone className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-[#8B0000] mb-3">
+            <h3 className="text-2xl font-bold text-brand-700 mb-3">
               Call Now
             </h3>
             <p className="text-gray-600 mb-6">
               Speak to us directly for orders & queries
             </p>
-            <Button className="bg-[#8B0000] text-white hover:bg-[#6B0000] w-full">
+            <Button className="bg-brand-700 text-white hover:bg-brand w-full">
               {restaurantInfo.phone}
             </Button>
           </div>
@@ -152,7 +147,7 @@ const OrderSection = () => {
             <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <MessageCircle className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-[#8B0000] mb-3">
+            <h3 className="text-2xl font-bold text-brand-700 mb-3">
               WhatsApp Order
             </h3>
             <p className="text-gray-600 mb-6">
@@ -166,7 +161,7 @@ const OrderSection = () => {
 
         {/* Urgency Banner */}
         <div className="mt-12 max-w-3xl mx-auto bg-[#D4AF37] rounded-2xl p-6 text-center">
-          <p className="text-[#8B0000] font-bold text-xl">
+          <p className="text-brand-800 font-bold text-xl">
             ⚡ Fast Delivery in Potheri Area • Order Now & Get Hot Food in 30 Minutes!
           </p>
         </div>
@@ -178,7 +173,7 @@ const OrderSection = () => {
           {!orderSuccess ? (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-[#8B0000]">
+                <DialogTitle className="text-2xl font-bold text-brand-700">
                   Place Your Order
                 </DialogTitle>
               </DialogHeader>
@@ -201,7 +196,7 @@ const OrderSection = () => {
                     onChange={handleInputChange}
                     required
                     disabled={isSubmitting}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000] transition-colors disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-brand-700 transition-colors disabled:bg-gray-100"
                     placeholder="Enter your name"
                   />
                 </div>
@@ -216,7 +211,7 @@ const OrderSection = () => {
                     onChange={handleInputChange}
                     required
                     disabled={isSubmitting}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000] transition-colors disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-brand-700 transition-colors disabled:bg-gray-100"
                     placeholder="Enter your phone number"
                   />
                 </div>
@@ -231,7 +226,7 @@ const OrderSection = () => {
                     required
                     disabled={isSubmitting}
                     rows="2"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000] transition-colors resize-none disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-brand-700 transition-colors resize-none disabled:bg-gray-100"
                     placeholder="Enter delivery address"
                   ></textarea>
                 </div>
@@ -246,7 +241,7 @@ const OrderSection = () => {
                     required
                     disabled={isSubmitting}
                     rows="3"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000] transition-colors resize-none disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-brand-700 transition-colors resize-none disabled:bg-gray-100"
                     placeholder="E.g., 2x Chicken Biryani, 1x Butter Chicken"
                   ></textarea>
                 </div>
@@ -260,14 +255,14 @@ const OrderSection = () => {
                     onChange={handleInputChange}
                     disabled={isSubmitting}
                     rows="2"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#8B0000] transition-colors resize-none disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-brand-700 transition-colors resize-none disabled:bg-gray-100"
                     placeholder="Any special requests?"
                   ></textarea>
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#8B0000] text-white hover:bg-[#6B0000] py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  className="w-full bg-brand-700 text-white hover:bg-brand py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -285,13 +280,13 @@ const OrderSection = () => {
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-12 h-12 text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-[#8B0000] mb-2">
+              <h3 className="text-2xl font-bold text-brand-700 mb-2">
                 Order Received!
               </h3>
               <p className="text-gray-600 mb-3">
                 Your order number is:
               </p>
-              <p className="text-3xl font-bold text-[#D4AF37] mb-4">
+              <p className="text-3xl font-bold text-gold mb-4">
                 {orderNumber}
               </p>
               <p className="text-gray-600">

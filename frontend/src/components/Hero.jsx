@@ -1,92 +1,131 @@
-import React from 'react';
-import { Star, MapPin, Clock, ArrowRight } from 'lucide-react';
-import { restaurantInfo } from '../utils/mockData';
+import React from "react";
+import { Star, MapPin, Clock, ArrowRight, Utensils } from "lucide-react";
+import { restaurantInfo } from "../utils/mockData";
 
 const Hero = ({ onOrderClick, onMenuClick }) => {
   return (
-    <section id="home" className="relative pt-20 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-      {/* Background Image with Overlay */}
+    <section
+      id="home"
+      className="relative min-h-[90vh] flex items-center overflow-hidden bg-cream"
+    >
+      {/* Background Image */}
+
       <div className="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1689079564957-83e3641c7fd8"
-          alt="Restaurant Interior"
-          className="w-full h-full object-cover"
+          alt="Restaurant"
+          className="w-full h-full object-cover scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/70 to-black/50"></div>
+
+        {/* Softer gradient overlay */}
+
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/20"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl">
-          {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/20 backdrop-blur-sm border border-[#D4AF37] px-4 py-2 rounded-full mb-6">
-            <Star className="w-5 h-5 text-[#D4AF37] fill-current" />
-            <span className="text-[#D4AF37] font-semibold">
-              {restaurantInfo.rating} Rating • {restaurantInfo.reviewCount}+ Reviews
+      {/* Content */}
+
+      <div className="container mx-auto px-4 relative z-10 py-20">
+
+        <div className="max-w-2xl animate-fade-in">
+
+          {/* Rating */}
+
+          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full mb-6 shadow-sm">
+
+            <Star className="w-4 h-4 text-gold fill-gold" />
+
+            <span className="text-gold text-sm font-semibold">
+              {restaurantInfo.rating} • {restaurantInfo.reviewCount}+ Reviews
             </span>
+
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-5 leading-[1.05] drop-shadow-lg">
             Potheri's Favorite
-            <span className="block text-[#D4AF37]">Multi-Cuisine Restaurant</span>
+            <span className="block text-gold mt-2">Multi-Cuisine</span>
           </h1>
 
-          {/* Subheading */}
-          <p className="text-xl md:text-2xl text-gray-200 mb-4">
-            Delicious Biryani, North Indian & Chinese
-          </p>
-          <p className="text-lg text-gray-300 mb-8">
-            Just Steps from SRM University • {restaurantInfo.avgCost}
+          {/* Subtitle */}
+
+          <p className="text-lg md:text-xl text-gray-200 mb-10 max-w-lg">
+            Authentic Biryani, North Indian & Chinese — crafted with passion
+            and served fresh every day.
           </p>
 
-          {/* Quick Info Tags */}
-          <div className="flex flex-wrap gap-4 mb-8">
-            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
-              <Clock className="w-5 h-5 text-[#D4AF37]" />
-              <span className="text-white font-medium">Open Today: {restaurantInfo.timings}</span>
+          {/* Info Pills */}
+
+          <div className="flex flex-wrap gap-3 mb-10">
+
+            <div className="flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full text-sm text-white border border-white/10 shadow-sm">
+              <Clock className="w-4 h-4 text-gold" />
+              {restaurantInfo.timings}
             </div>
-            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
-              <MapPin className="w-5 h-5 text-[#D4AF37]" />
-              <span className="text-white font-medium">{restaurantInfo.landmark}</span>
+
+            <div className="flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full text-sm text-white border border-white/10 shadow-sm">
+              <MapPin className="w-4 h-4 text-gold" />
+              {restaurantInfo.landmark}
             </div>
+
+            <div className="flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full text-sm text-white border border-white/10 shadow-sm">
+              <Utensils className="w-4 h-4 text-gold" />
+              {restaurantInfo.avgCost}
+            </div>
+
           </div>
 
-          {/* CTAs */}
+          {/* CTA Buttons */}
+
           <div className="flex flex-col sm:flex-row gap-4">
+
             <button
               onClick={onOrderClick}
-              className="group bg-[#8B0000] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#6B0000] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center space-x-2"
+              className="group bg-gold text-black px-8 py-4 rounded-xl font-semibold text-base hover:bg-gold-dark hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
             >
-              <span>Order Now</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Order Now
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
+
             <button
               onClick={onMenuClick}
-              className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-semibold text-lg border-2 border-white hover:bg-white hover:text-[#8B0000] transition-all duration-300"
+              className="bg-white/15 backdrop-blur-md text-white px-8 py-4 rounded-xl font-semibold text-base border border-white/20 hover:bg-white hover:text-brand-700 transition-all duration-300"
             >
               View Menu
             </button>
+
           </div>
 
-          {/* Urgency Banner */}
-          <div className="mt-8 inline-block">
-            <div className="bg-[#D4AF37] text-[#8B0000] px-6 py-3 rounded-lg font-bold text-lg">
-              🔥 Open Now • Fast Delivery!
-            </div>
-          </div>
         </div>
+
       </div>
 
-      {/* Price Badge - Floating */}
-      <div className="absolute bottom-8 right-8 hidden lg:block">
-        <div className="bg-white p-6 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
+      {/* Floating Info Card */}
+
+      <div className="absolute bottom-12 right-12 hidden lg:block animate-slide-up">
+
+        <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 hover:scale-105 transition-transform duration-300">
+
           <div className="text-center">
-            <div className="text-3xl font-bold text-[#8B0000] mb-1">₹500</div>
-            <div className="text-sm text-gray-600 font-medium">For Two People</div>
-            <div className="mt-2 text-xs text-[#D4AF37] font-semibold">Best Value Meals</div>
+
+            <div className="text-4xl font-bold text-brand-700 mb-1">
+              ₹500
+            </div>
+
+            <div className="text-sm text-gray-500 font-medium">
+              Avg Cost for Two
+            </div>
+
+            <div className="mt-2 text-xs text-gold-dark font-semibold uppercase tracking-wide">
+              Best Value
+            </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
   );
 };

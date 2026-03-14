@@ -4,14 +4,14 @@ import { reviews } from '../utils/mockData';
 
 const Reviews = () => {
   return (
-    <section className="py-16 md:py-24 bg-[#FFF8DC]">
+    <section className="py-16 md:py-24 bg-cream">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-block bg-[#8B0000]/10 px-4 py-2 rounded-full mb-4">
-            <span className="text-[#8B0000] font-semibold">Testimonials</span>
+          <div className="inline-block bg-brand-700/10 px-4 py-2 rounded-full mb-4">
+            <span className="text-brand-700 font-semibold">Testimonials</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#8B0000] mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-700 mb-4">
             Loved by Families in Potheri
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -28,7 +28,7 @@ const Reviews = () => {
             >
               {/* Quote Icon */}
               <div className="mb-4">
-                <Quote className="w-10 h-10 text-[#D4AF37]/30" />
+                <Quote className="w-10 h-10 text-gold/30" />
               </div>
 
               {/* Rating */}
@@ -38,7 +38,7 @@ const Reviews = () => {
                     key={i}
                     className={`w-5 h-5 ${
                       i < review.rating
-                        ? 'text-[#D4AF37] fill-current'
+                        ? 'text-gold fill-current'
                         : 'text-gray-300'
                     }`}
                   />
@@ -52,11 +52,11 @@ const Reviews = () => {
 
               {/* Reviewer Info */}
               <div className="flex items-center space-x-3 pt-4 border-t border-gray-100">
-                <div className="w-12 h-12 bg-[#8B0000] rounded-full flex items-center justify-center text-white font-bold">
+                <div className="w-12 h-12 bg-brand-700 rounded-full flex items-center justify-center text-white font-bold">
                   {review.avatar}
                 </div>
                 <div>
-                  <div className="font-semibold text-[#8B0000]">{review.name}</div>
+                  <div className="font-semibold text-brand-700">{review.name}</div>
                   <div className="text-sm text-gray-500">{review.date}</div>
                 </div>
               </div>
@@ -67,7 +67,7 @@ const Reviews = () => {
         {/* Call to Action */}
         <div className="mt-12 text-center">
           <p className="text-gray-600 mb-4">Want to share your experience?</p>
-          <button className="bg-[#8B0000] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#6B0000] transition-colors">
+          <button className="bg-brand-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand transition-colors">
             Write a Review
           </button>
         </div>

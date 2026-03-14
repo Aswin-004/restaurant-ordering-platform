@@ -1,134 +1,250 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Menu, X, Clock } from 'lucide-react';
+import { Phone, Menu, X, Clock, ShoppingBag, MapPin } from 'lucide-react';
+import { useNavigate, useLocation as useRouterLocation } from 'react-router-dom';
 import { restaurantInfo } from '../utils/mockData';
+import { useCart } from '../contexts/CartContext';
 
-const Header = () => {
+const Header = ({ onCartClick }) => {
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { getItemCount } = useCart();
+  const navigate = useNavigate();
+  const routerLocation = useRouterLocation();
+
+  const itemCount = getItemCount();
+  const isHome = routerLocation.pathname === '/';
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
+    if (!isHome) {
+      navigate('/');
+      return;
     }
+
+    const el = document.getElementById(sectionId);
+
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    setIsMobileMenuOpen(false);
   };
 
+  const navItems = [
+    { id: "home", label: "Home", section: "home", path: "/" },
+    { id: "menu", label: "Menu", section: "menu" },
+    { id: "specials", label: "Specials", section: "specials" },
+    { id: "track", label: "Track Order", path: "/track-order" }
+  ];
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-3' : 'bg-white/95 backdrop-blur-sm py-4'
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="text-2xl font-bold text-[#8B0000]">
-              {restaurantInfo.name}
-            </div>
+    <>
+      {/* Top Info Bar */}
+
+      <div className="bg-brand-800 text-white text-xs py-2 hidden md:block">
+
+        <div className="container mx-auto px-4 flex items-center justify-between">
+
+          <div className="flex items-center gap-5">
+
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3 text-gold" />
+              {restaurantInfo.timingsDetail}
+            </span>
+
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-gold" />
+              {restaurantInfo.area}
+            </span>
+
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={() => scrollToSection('home')}
-              className="text-gray-700 hover:text-[#8B0000] transition-colors font-medium"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection('menu')}
-              className="text-gray-700 hover:text-[#8B0000] transition-colors font-medium"
-            >
-              Menu
-            </button>
-            <button
-              onClick={() => scrollToSection('about')}
-              className="text-gray-700 hover:text-[#8B0000] transition-colors font-medium"
-            >
-              About
-            </button>
-            <button
-              onClick={() => scrollToSection('location')}
-              className="text-gray-700 hover:text-[#8B0000] transition-colors font-medium"
-            >
-              Location
-            </button>
-          </nav>
-
-          {/* Contact Info */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm">
-              <Clock className="w-4 h-4 text-[#D4AF37]" />
-              <span className="text-gray-600">{restaurantInfo.timingsDetail}</span>
-            </div>
-            <a
-              href={`tel:${restaurantInfo.phone}`}
-              className="flex items-center space-x-2 bg-[#8B0000] text-white px-4 py-2 rounded-md hover:bg-[#6B0000] transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              <span className="font-medium">{restaurantInfo.phone}</span>
-            </a>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-gray-700"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          <a
+            href={`tel:${restaurantInfo.phone}`}
+            className="flex items-center gap-1 hover:text-gold transition-colors"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+            <Phone className="w-3 h-3" />
+            {restaurantInfo.phone}
+          </a>
+
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t pt-4">
-            <nav className="flex flex-col space-y-3">
+      </div>
+
+      {/* Main Header */}
+
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md backdrop-blur-sm py-2' : 'bg-white py-3'}`}>
+
+        <div className="container mx-auto px-4 flex items-center justify-between">
+
+          {/* Logo */}
+
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-3 group"
+          >
+
+            <div className="w-10 h-10 bg-brand-700 rounded-xl flex items-center justify-center text-white font-display font-bold text-lg shadow-sm group-hover:bg-brand-600 transition-colors">
+              C
+            </div>
+
+            <div>
+              <div className="text-lg font-display font-bold text-brand-800 leading-tight">
+                {restaurantInfo.name}
+              </div>
+
+              <div className="text-[10px] text-gold-dark font-semibold tracking-widest uppercase">
+                Fine Dining
+              </div>
+            </div>
+
+          </button>
+
+          {/* Desktop Navigation */}
+
+          <nav className="hidden md:flex items-center gap-2">
+
+            {navItems.map(item => (
+
               <button
-                onClick={() => scrollToSection('home')}
-                className="text-left text-gray-700 hover:text-[#8B0000] transition-colors font-medium py-2"
+                key={item.id}
+                onClick={() => {
+
+                  if (item.path) {
+                    navigate(item.path);
+                  } else {
+                    scrollToSection(item.section);
+                  }
+
+                }}
+
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-brand-700 hover:bg-brand-50 rounded-lg transition-all"
               >
-                Home
+                {item.label}
               </button>
+
+            ))}
+
+          </nav>
+
+          {/* Right Side Actions */}
+
+          <div className="flex items-center gap-3">
+
+            {/* Cart Button */}
+
+            {onCartClick && (
+
               <button
-                onClick={() => scrollToSection('menu')}
-                className="text-left text-gray-700 hover:text-[#8B0000] transition-colors font-medium py-2"
+                onClick={onCartClick}
+                className="relative p-2 text-gray-600 hover:text-brand-700 hover:bg-brand-50 rounded-lg transition-all"
               >
-                Menu
+
+                <ShoppingBag className="w-5 h-5" />
+
+                {itemCount > 0 && (
+
+                  <span className="absolute -top-1 -right-1 bg-brand text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full animate-cart-bounce">
+                    {itemCount}
+                  </span>
+
+                )}
+
               </button>
+
+            )}
+
+            {/* Order Button */}
+
+            <a
+              href={`tel:${restaurantInfo.phone}`}
+              className="hidden md:flex items-center gap-2 bg-brand-700 text-white px-4 py-2 rounded-lg hover:bg-brand-600 hover:shadow-md transition-all text-sm font-medium"
+            >
+
+              <Phone className="w-4 h-4" />
+
+              Order Now
+
+            </a>
+
+            {/* Mobile Menu Button */}
+
+            <button
+              className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+
+            </button>
+
+          </div>
+
+        </div>
+
+        {/* Mobile Navigation */}
+
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-80 border-t bg-white' : 'max-h-0'}`}>
+
+          <div className="container mx-auto px-4 py-3 space-y-1">
+
+            {navItems.map(item => (
+
               <button
-                onClick={() => scrollToSection('about')}
-                className="text-left text-gray-700 hover:text-[#8B0000] transition-colors font-medium py-2"
+                key={item.id}
+                onClick={() => {
+
+                  if (item.path) {
+
+                    navigate(item.path);
+                    setIsMobileMenuOpen(false);
+
+                  } else {
+
+                    scrollToSection(item.section);
+
+                  }
+
+                }}
+
+                className="block w-full text-left px-4 py-2.5 text-gray-700 hover:text-brand-700 hover:bg-brand-50 rounded-lg transition-all font-medium text-sm"
               >
-                About
+
+                {item.label}
+
               </button>
-              <button
-                onClick={() => scrollToSection('location')}
-                className="text-left text-gray-700 hover:text-[#8B0000] transition-colors font-medium py-2"
-              >
-                Location
-              </button>
+
+            ))}
+
+            <div className="flex gap-2 pt-2">
+
               <a
                 href={`tel:${restaurantInfo.phone}`}
-                className="flex items-center space-x-2 bg-[#8B0000] text-white px-4 py-3 rounded-md hover:bg-[#6B0000] transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-brand-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-600"
               >
+
                 <Phone className="w-4 h-4" />
-                <span className="font-medium">Call Now</span>
+
+                Call Now
+
               </a>
-            </nav>
+
+            </div>
+
           </div>
-        )}
-      </div>
-    </header>
+
+        </div>
+
+      </header>
+
+    </>
   );
 };
 

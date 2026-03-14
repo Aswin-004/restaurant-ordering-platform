@@ -1,76 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, ArrowUp } from 'lucide-react';
 import { restaurantInfo } from '../utils/mockData';
 
 const FloatingButtons = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
-    };
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hi! I'd like to place an order from Classic Restaurant.`
-    );
-    window.open(`https://wa.me/${restaurantInfo.whatsapp.replace(/\+/g, '')}?text=${message}`, '_blank');
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const message = encodeURIComponent(`Hi! I'd like to place an order from Classic Restaurant.`);
+    window.open(`https://wa.me/${restaurantInfo.whatsapp.replace(/\+/g, '')}?text=${message}`, '_blank', 'noopener');
   };
 
   return (
     <>
-      {/* WhatsApp Floating Button */}
+      {/* WhatsApp – always visible, positioned above mobile cart bar on mobile */}
       <button
         onClick={handleWhatsApp}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl hover:bg-[#20BA5A] transition-all duration-300 hover:scale-110 flex items-center justify-center group"
-        aria-label="WhatsApp Order"
+        className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-30 w-12 h-12 md:w-14 md:h-14 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#20BA5A] hover:scale-105 transition-all flex items-center justify-center group"
+        aria-label="Order on WhatsApp"
       >
-        <MessageCircle className="w-7 h-7" />
-        <span className="absolute right-16 bg-[#25D366] text-white px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <MessageCircle className="w-6 h-6 md:w-7 md:h-7" />
+        <span className="hidden md:block absolute right-16 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           Order on WhatsApp
         </span>
       </button>
 
-      {/* Scroll to Top Button */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-24 right-6 z-50 w-12 h-12 bg-[#8B0000] text-white rounded-full shadow-xl hover:bg-[#6B0000] transition-all duration-300 hover:scale-110 flex items-center justify-center"
-          aria-label="Scroll to top"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 10l7-7m0 0l7 7m-7-7v18"
-            />
-          </svg>
-        </button>
-      )}
-
-      {/* Mobile Sticky Order Button */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-[#8B0000] shadow-2xl p-4">
-        <button
-          onClick={handleWhatsApp}
-          className="w-full bg-[#8B0000] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#6B0000] transition-colors shadow-lg flex items-center justify-center space-x-2"
-        >
-          <MessageCircle className="w-5 h-5" />
-          <span>Order Now - Quick Delivery!</span>
-        </button>
-      </div>
+      {/* Scroll to top */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={`fixed bottom-[136px] md:bottom-24 right-4 md:right-6 z-30 w-10 h-10 bg-brand-700 text-white rounded-full shadow-lg hover:bg-brand transition-all flex items-center justify-center ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+        aria-label="Scroll to top"
+      >
+        <ArrowUp className="w-5 h-5" />
+      </button>
     </>
   );
 };

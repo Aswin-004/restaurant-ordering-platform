@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List
 from models import MenuItemCreate, MenuItemResponse, MenuItemUpdate
+from routes.auth import get_current_admin
 from datetime import datetime
 import uuid
 
@@ -60,7 +61,7 @@ async def get_categories():
 
 
 @router.post("", response_model=MenuItemResponse, status_code=status.HTTP_201_CREATED)
-async def create_menu_item(item: MenuItemCreate):
+async def create_menu_item(item: MenuItemCreate, current_admin: dict = Depends(get_current_admin)):
     """Create a new menu item (admin only)"""
     try:
         db = get_db()
@@ -116,7 +117,7 @@ async def get_menu_item(item_id: str):
 
 
 @router.patch("/{item_id}", response_model=MenuItemResponse)
-async def update_menu_item(item_id: str, item_update: MenuItemUpdate):
+async def update_menu_item(item_id: str, item_update: MenuItemUpdate, current_admin: dict = Depends(get_current_admin)):
     """Update a menu item (admin only)"""
     try:
         db = get_db()
@@ -157,7 +158,7 @@ async def update_menu_item(item_id: str, item_update: MenuItemUpdate):
 
 
 @router.delete("/{item_id}")
-async def delete_menu_item(item_id: str):
+async def delete_menu_item(item_id: str, current_admin: dict = Depends(get_current_admin)):
     """Delete a menu item (admin only)"""
     try:
         db = get_db()

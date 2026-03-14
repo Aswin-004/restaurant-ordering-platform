@@ -3,14 +3,14 @@ import { gallery } from '../utils/mockData';
 
 const Gallery = () => {
   return (
-    <section className="py-16 md:py-24 bg-[#FFF8DC]">
+    <section className="py-16 md:py-24 bg-cream">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-block bg-[#8B0000]/10 px-4 py-2 rounded-full mb-4">
-            <span className="text-[#8B0000] font-semibold">Gallery</span>
+          <div className="inline-block bg-brand-50 px-4 py-2 rounded-full mb-4">
+            <span className="text-brand-700 font-semibold">Gallery</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#8B0000] mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-700 mb-4 font-display">
             A Glimpse Inside
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -36,7 +36,7 @@ const Gallery = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-6 left-6 right-6">
                   <h3 className="text-white font-bold text-xl mb-2">{item.title}</h3>
-                  <span className="inline-block bg-[#D4AF37] text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  <span className="inline-block bg-gold text-white px-3 py-1 rounded-full text-sm font-semibold">
                     {item.category}
                   </span>
                 </div>

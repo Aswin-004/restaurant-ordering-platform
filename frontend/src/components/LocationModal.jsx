@@ -54,7 +54,7 @@ const LocationModal = ({ isOpen, onClose }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-[#8B0000] flex items-center space-x-2">
+          <DialogTitle className="text-2xl font-bold text-brand-700 flex items-center space-x-2">
             <MapPin className="w-6 h-6" />
             <span>Select Order Type</span>
           </DialogTitle>
@@ -69,16 +69,16 @@ const LocationModal = ({ isOpen, onClose }) => {
             {/* Delivery Option */}
             <button
               onClick={() => handleTypeSelect('delivery')}
-              className="w-full p-6 border-2 border-gray-200 rounded-xl hover:border-[#8B0000] hover:bg-[#FFF8DC] transition-all group"
+              className="w-full p-6 border-2 border-gray-200 rounded-xl hover:border-brand-700 hover:bg-cream transition-all group"
             >
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#8B0000] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-brand-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-lg font-bold text-[#8B0000]">Home Delivery</h3>
+                  <h3 className="text-lg font-bold text-brand-700">Home Delivery</h3>
                   <p className="text-sm text-gray-600 mt-1">
                     Get it delivered to your doorstep
                   </p>
@@ -92,14 +92,14 @@ const LocationModal = ({ isOpen, onClose }) => {
             {/* Pickup Option */}
             <button
               onClick={() => handleTypeSelect('pickup')}
-              className="w-full p-6 border-2 border-gray-200 rounded-xl hover:border-[#8B0000] hover:bg-[#FFF8DC] transition-all group"
+              className="w-full p-6 border-2 border-gray-200 rounded-xl hover:border-brand-700 hover:bg-cream transition-all group"
             >
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#8B0000] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-brand-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <ShoppingBag className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-lg font-bold text-[#8B0000]">Pickup</h3>
+                  <h3 className="text-lg font-bold text-brand-700">Pickup</h3>
                   <p className="text-sm text-gray-600 mt-1">
                     Collect from restaurant
                   </p>
@@ -116,7 +116,7 @@ const LocationModal = ({ isOpen, onClose }) => {
           <div className="space-y-4 mt-4">
             <button
               onClick={handleBack}
-              className="text-sm text-gray-600 hover:text-[#8B0000] flex items-center space-x-1"
+              className="text-sm text-gray-600 hover:text-brand-700 flex items-center space-x-1"
             >
               <span>←</span>
               <span>Back</span>
@@ -130,7 +130,7 @@ const LocationModal = ({ isOpen, onClose }) => {
               {SERVICEABLE_AREAS.map((area) => (
                 <label
                   key={area.value}
-                  className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-[#8B0000] hover:bg-[#FFF8DC] transition-all"
+                  className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brand-700 hover:bg-cream transition-all"
                 >
                   <input
                     type="radio"
@@ -141,7 +141,7 @@ const LocationModal = ({ isOpen, onClose }) => {
                       setSelectedArea(e.target.value);
                       setCustomArea('');
                     }}
-                    className="w-5 h-5 text-[#8B0000]"
+                    className="w-5 h-5 accent-brand-700"
                   />
                   <div className="ml-3 flex-1">
                     <div className="font-semibold text-gray-800">{area.label}</div>
@@ -151,14 +151,14 @@ const LocationModal = ({ isOpen, onClose }) => {
               ))}
 
               {/* Custom Area */}
-              <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-[#8B0000] hover:bg-[#FFF8DC] transition-all">
+              <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brand-700 hover:bg-cream transition-all">
                 <input
                   type="radio"
                   name="area"
                   value="custom"
                   checked={selectedArea === 'custom'}
                   onChange={(e) => setSelectedArea(e.target.value)}
-                  className="w-5 h-5 text-[#8B0000] mt-1"
+                  className="w-5 h-5 accent-brand-700 mt-1"
                 />
                 <div className="ml-3 flex-1">
                   <div className="font-semibold text-gray-800 mb-2">Other Area</div>
@@ -168,7 +168,7 @@ const LocationModal = ({ isOpen, onClose }) => {
                       value={customArea}
                       onChange={(e) => setCustomArea(e.target.value)}
                       placeholder="Enter your area"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8B0000]"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-700"
                       autoFocus
                     />
                   )}
@@ -181,7 +181,7 @@ const LocationModal = ({ isOpen, onClose }) => {
 
             <Button
               onClick={handleAreaSelect}
-              className="w-full bg-[#8B0000] text-white hover:bg-[#6B0000] py-3 text-lg font-semibold mt-6"
+              className="w-full bg-brand-700 text-white hover:bg-brand py-3 text-lg font-semibold mt-6"
             >
               Continue
             </Button>

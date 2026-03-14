@@ -125,6 +125,16 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { itemId, quantity } });
   };
 
+  const increaseQuantity = (itemId) => {
+    const item = state.items.find(i => i.id === itemId);
+    if (item) updateQuantity(itemId, item.quantity + 1);
+  };
+
+  const decreaseQuantity = (itemId) => {
+    const item = state.items.find(i => i.id === itemId);
+    if (item) updateQuantity(itemId, item.quantity - 1);
+  };
+
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
   };
@@ -142,6 +152,8 @@ export const CartProvider = ({ children }) => {
     addItem,
     removeItem,
     updateQuantity,
+    increaseQuantity,
+    decreaseQuantity,
     clearCart,
     getItemCount,
     getCartTotal
